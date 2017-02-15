@@ -1,3 +1,7 @@
+turk_experiment/static/dataset*
+.psiturk_history
+*~
+
 # Logs
 logs
 *.log

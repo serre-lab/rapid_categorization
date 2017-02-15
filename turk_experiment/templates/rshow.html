@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Results</title>
+  <script src='sql.js/js/sql.js'></script>
+
+
+</head>
+
+<body>
+  <div id='output'></div>
+</body>
+<script>
+  var addline = function (line)
+  {
+    var p = document.createElement('span');
+    p.innerHTML = line;
+    var out = document.getElementById('output');
+    out.appendChild(p);
+  }
+  var process_db = function (db)
+  {
+    
+
+  var contents = db.exec("SELECT workerid,beginhit,status,datastring FROM placecat");
+  // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
+  var values = contents[0].values;
+  for (var j=0; j<values.length; ++j)
+  {
+    var workerid = values[j][0];
+    var beginhit = values[j][1];
+    var status = values[j][2];
+    if (status != 4 && status != 3) continue;
+    if (!values[j][3]) continue;
+    var result_s = "result="+values[j][3];
+    var result = eval(result_s);
+
+      var n_trial = -4, n_correct = 0, rt = 0, n_answered = 0;
+      for (var i=0; i<result.data.length; ++i)
+      {
+        var t = result.data[i].trialdata;
+        if (t.trial_type != 's2stim') continue;
+        ++n_trial;
+        if (n_trial <= 0) continue;
+        if (t.rt >= 0)
+        {
+          ++n_answered;
+          rt = rt + t.rt;
+        }
+        if (t.response == t.true_response) ++n_correct;
+      }
+      if (!n_answered) n_answered = 1;
+      var perf = n_correct / n_answered;
+      var corrperf = (n_correct + (n_trial - n_answered) / 2) / n_trial;
+      rt = rt / n_answered;
+      var r_answered = n_answered / n_trial; 
+      addline(workerid + ' at ' + beginhit + ' got ' + n_correct + ' of ' + n_trial + ' (' + perf*100 + '%, ' + corrperf + '%) RT ' +rt + ' invalid: ' + (n_trial - n_answered) + '<br>');
+      //alert('got ' + n_correct + ' of ' + n_trial + ' (' + perf + '%)');
+      /*for (var i=0; i<result.data.length; ++i)
+      {
+        var p = document.createElement('span');
+        var t = result.data[i].trialdata;
+        p.innerHTML = t.trial_type + ' ' + t.rt + ' ' + t.response + ' ' + t.true_response + '<br>';
+        out.appendChild(p);
+      }*/
+    }
+  }
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'cmtcat.db', true);
+xhr.responseType = 'arraybuffer';
+
+xhr.onload = function(e) {
+  var uInt8Array = new Uint8Array(this.response);
+  var db = new SQL.Database(uInt8Array);
+  process_db(db);
+
+};
+xhr.send();
+
+</script>
+
+</html>

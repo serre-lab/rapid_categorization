@@ -1,0 +1,8 @@
+README - emtcat
+
+Animal/non-animal Turk experiment with 300 images and varied SOA.
+
+-SOA: randomized presentation of 500ms, 1000ms, 2000ms stimuli blocks - two each for a total of 6 blocks
+-Image selection: balanced 150 animal and 150 non-animal images, randomly sampled from mammal (75 images) and non-mammal animal (75 images) target and natural (75 images) and artificial (75 images) object/scene distractors. When selecting images, we excluded those pictures that contain all white backgrounds, that are smaller than 256x256, that contain humans in a major role, that unreasonably obscure the subject, and/or that are missclassified. (For animals we omitted fake animals, likenesses of animals i.e. sketches, and fossils.) The training images (4 animal, 4 non-animal) were chosen this way as well. (2 animal and 2 non-animal at 500ms, 1 of each at 200ms, 1 of each at 100ms); the example images displaye on the intro screen are number 345 and 3456 in 'setb50k_500.txt'
+-Presentation time: 50ms display (3 frames on 60Hz, generated at 20 fps)
+-Goal: get data to test the evaluation against all models to help decide which level comparisons to run
