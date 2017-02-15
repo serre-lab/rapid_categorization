@@ -2,9 +2,9 @@
 
 from image_net_request import ImageNet
 
-foo = ImageNet('./ImageNet_structure.xml',
+foo = ImageNet('/media/data/nsf_levels_michelecopy/imagenet_data/ImageNet_structure.xml',
                '/media/data/nsf_levels_michelecopy/cars_pedestrians',
-               './cars_pedestrians.txt', 100*6, './fall11_urls.txt')
+               './cars_pedestrians.txt', 100 * 6, '/media/data/nsf_levels_michelecopy/imagenet_data/fall11_urls.txt')
 
 # Check number of images we have references for
 # print sum([len(foo.wnid_url_map[key]) for key in foo.wnid_url_map])
