@@ -1,0 +1,3 @@
+mammals artificial
+pedestrian:n10412055
+car:n02958343
