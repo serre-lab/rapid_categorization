@@ -2,10 +2,12 @@
 # Per-run settings of the experiments
 
 def base_settings(p):
+    p['config'] = {}
+    p['config']['HIT Configuration'] = {}
     p['exp'] = {}
     p['exp']['num_blocks'] = 6
     p['exp']['fixation_duration'] = 600
-    p['exp']['presentation_duration'] = 50
+    p['exp']['presentation_duration'] = 100
     p['exp']['training_presentation_durations'] = [500, 500, 500, 500, 200, 200, 100, 100]
     p['exp']['max_answer_times'] = [500, 500, 500, 500, 500, 500]
     p['exp']['max_training_answer_time'] = 1500
@@ -20,12 +22,14 @@ def base_settings(p):
                           "static/examples/ex3n.webm"]
     p['exp']['example_stim_len'] = [1300, 1300, 1300, 1300, 1300, 1300]
     p['exp']['example_answers'] = [1, 0, 1, 0, 0, 1]
-    p['exp']['example_pretime'] = 1100
+    p['exp']['example_pretime'] = 1100\
 
 
 def clicktionary(p):
     base_settings(p)
-    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images'
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_100'
     p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
     p['set_name'] = 'clicktionary'
     p['set_indices'] = range(1000, 1020)
+    p['config']['HIT Configuration']['title'] = 'Animal Recognition'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'

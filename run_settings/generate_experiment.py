@@ -7,6 +7,7 @@ from rapid_categorization.run_settings import settings
 from hmax.levels.util import get_imageset_filename
 from rapid_categorization.config import psiturk_run_path
 import subprocess
+from ConfigParser import SafeConfigParser
 
 def apply_dict_to_template(src_filename, dst_filename, settings):
     # Replace placeholders in src filename and save to dst filename
@@ -31,6 +32,14 @@ def write_set_file(set_index, set_name, dst_filename):
         fid.write('img,cat\n')
         for line in data:
             fid.write(','.join(line.split('\t')) + '\n')
+
+def write_values_to_config(settings, config_filename):
+    cp = SafeConfigParser()
+    cp.read(config_filename)
+    for sect_name, sect_values in settings.iteritems():
+        for k,v in sect_values.iteritems():
+            cp.set(sect_name, k, str(v))
+    cp.write(open(config_filename, 'wt'))
 
 def generate_experiment(name, force_overwrite=False, deploy=False):
     # Get settings
@@ -57,6 +66,8 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
     p['exp']['experiment_sets'] = p['set_indices']
     # Generate javascript settings file
     dict_to_js(p['exp'], os.path.join(run_path, 'static', 'config.js'))
+    # Generate main psiturk config file
+    write_values_to_config(p['config'], os.path.join(run_path, 'config.txt'))
     # deploy to server
     if deploy:
         subprocess.call(['rsync', '-avz', '--', run_path, 'turk:~/experiments/'])

@@ -39,11 +39,11 @@ def generate_stimulus_videos(image_folder, video_folder, onset_times_ms, after_t
             # TODO
 
 if __name__ == '__main__':
-    #generate_stimulus_videos(config.input_image_path, config.video_path, config.onset_times_ms, config.after_time_ms, config.stim_show_time_ms)
-    generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs', '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_500', config.onset_times_ms, config.after_time_ms, stim_show_time_ms=500)
-    generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
-                             '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_200',
-                             config.onset_times_ms, config.after_time_ms, stim_show_time_ms=200)
-    generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
-                         '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_100',
-                         config.onset_times_ms, config.after_time_ms, stim_show_time_ms=100)
+    generate_stimulus_videos(config.input_image_path, '/media/data_cifs/rapid_categorization/clicktionary_masked_images_100', config.onset_times_ms, config.after_time_ms, stim_show_time_ms=100)
+    #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs', '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_500', config.onset_times_ms, config.after_time_ms, stim_show_time_ms=500)
+    #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
+    #                         '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_200',
+    #                         config.onset_times_ms, config.after_time_ms, stim_show_time_ms=200)
+    #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
+    #                     '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_100',
+    #                     config.onset_times_ms, config.after_time_ms, stim_show_time_ms=100)
