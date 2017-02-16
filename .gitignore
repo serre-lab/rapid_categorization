@@ -4,6 +4,7 @@ turk_experiment/static/dataset*
 tmp
 participants.db
 *.pyc
+.idea
 
 # Logs
 logs

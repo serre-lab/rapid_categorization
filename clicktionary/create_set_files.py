@@ -4,7 +4,6 @@
 import os
 from hmax.levels.util import get_imageset_filename_raw, get_imageset_filename
 import numpy as np
-from rapid_categorization.clicktionary.config import imageset_base_path
 
 def load_imagelist(set_index=50, set_name='clicktionary'):
     set_fn = get_imageset_filename_raw(set_index=set_index, set_name=set_name)

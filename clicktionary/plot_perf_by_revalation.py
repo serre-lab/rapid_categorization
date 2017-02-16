@@ -7,21 +7,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
+import pickle
 
 def get_performances(model_name, feature_name, classifier_type, train_batches, set_index, set_name):
     pred_fn = get_predictions_filename(model_name, feature_name, classifier_type, train_batches, set_index, set_name)
     pred = np.load(pred_fn)
-    print pred.keys()
     sfn = pred['source_filenames']
     hyper_dist = pred['hyper_dist']
     pred_labels = (hyper_dist > 0) + 0
     true_labels = pred['true_labels']
     correctness = (pred_labels == true_labels).astype(np.float)
-    print 'Performance: %.2f%%' % (100 * float(sum(pred_labels == true_labels)) / len(true_labels))
+    print 'Performance overall: %.2f%%' % (100 * float(sum(pred_labels == true_labels)) / len(true_labels))
     revalation = 100.0 - np.array([int(fn.split('/')[-2]) for fn in sfn])
     revs = np.unique(revalation)
-    print pred_labels
-    print true_labels
     perfs = []
     for rev in revs:
         mask = (revalation == rev)
@@ -45,6 +43,8 @@ if __name__ == '__main__':
     #data = pd.DataFrame(mat_data, columns=['revalation', 'correctness'])
     #sns.tsplot(time='revalation', value='correctness', data=data, ci=95, err_style="boot_traces", n_boot=500)
     #sns.tsplot(mat_data[(1, 0),:])
+    data_fn = os.path.join(imageset_base_path, 'perf_by_revalation_%s_%d.p' % (set_name, set_index))
+    pickle.dump({'unique_revs': revs, 'mean_perfs': perfs, 'revalation_raw': revalation, 'correctness_raw': correctness}, open(data_fn, 'wt'))
     plt.plot(revs, perfs)
     plt.title('%s(%s) %s performance on %s_%d' % (model_name, feature_name, classifier_type, set_name, set_index))
     plt.xlabel('Revalation (%)')
