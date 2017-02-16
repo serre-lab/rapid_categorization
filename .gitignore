@@ -1,6 +1,8 @@
 turk_experiment/static/dataset*
 .psiturk_history
 *~
+tmp
+participants.db
 
 # Logs
 logs
