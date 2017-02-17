@@ -22,7 +22,7 @@ def base_settings(p):
                           "static/examples/ex3n.webm"]
     p['exp']['example_stim_len'] = [1300, 1300, 1300, 1300, 1300, 1300]
     p['exp']['example_answers'] = [1, 0, 1, 0, 0, 1]
-    p['exp']['example_pretime'] = 1100\
+    p['exp']['example_pretime'] = 1100
 
 
 def clicktionary(p):
@@ -31,5 +31,5 @@ def clicktionary(p):
     p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
     p['set_name'] = 'clicktionary'
     p['set_indices'] = range(1000, 1020)
-    p['config']['HIT Configuration']['title'] = 'Animal Recognition'
+    p['config']['HIT Configuration']['title'] = 'Animal Recognition S'
     p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
