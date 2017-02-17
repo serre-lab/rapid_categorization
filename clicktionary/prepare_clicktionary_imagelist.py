@@ -15,7 +15,7 @@ def load_classes():
     return class_map
 
 def collect_images():
-    out_fn = os.path.join(imageset_base_path, 'raw_images_50.txt')
+    out_fn = os.path.join(imageset_base_path, 'raw_images_60.txt')
     class_map = load_classes()
     with open(out_fn, 'wt') as fid:
         for root, dirs, files in os.walk(imageset_base_path):
