@@ -40,9 +40,9 @@ def generate_stimulus_videos(image_folder, video_folder, onset_times_ms, after_t
 
 if __name__ == '__main__':
     onset_times_ms = [1000, 1100, 1200, 1300, 1400, 1500, 1600]
-    after_time_ms = 600
+    after_time_ms = 500
     input_image_path = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_images_balanced_cut'
-    generate_stimulus_videos(input_image_path, '/media/data_cifs/rapid_categorization/clicktionary_masked_images_balanced_cut_200', onset_times_ms, after_time_ms, stim_show_time_ms=200)
+    generate_stimulus_videos(input_image_path, '/media/data_cifs/rapid_categorization/clicktionary_masked_images_balanced_cut_100', onset_times_ms, after_time_ms, stim_show_time_ms=100)
     #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs', '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_500', config.onset_times_ms, config.after_time_ms, stim_show_time_ms=500)
     #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
     #                         '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_200',

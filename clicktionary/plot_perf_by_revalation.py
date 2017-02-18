@@ -35,7 +35,7 @@ if __name__ == '__main__':
     feature_name = 'fc7ex'
     classifier_type = 'svm'
     train_batches = [0, 15]
-    set_index = 50
+    set_index = 60
     set_name = 'clicktionary'
     revs, perfs, revalation, correctness = get_performances(model_name, feature_name, classifier_type, train_batches, set_index, set_name)
     #mat_data = np.hstack((revalation.reshape([-1, 1]), correctness.reshape([-1, 1])))

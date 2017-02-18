@@ -6,7 +6,7 @@ def base_settings(p):
     p['config']['HIT Configuration'] = {}
     p['exp'] = {}
     p['exp']['num_blocks'] = 6
-    p['exp']['fixation_duration'] = 600
+    p['exp']['fixation_duration'] = 500
     p['exp']['presentation_duration'] = 100
     p['exp']['training_presentation_durations'] = [500, 500, 500, 500, 200, 200, 100, 100]
     p['exp']['max_answer_times'] = [500, 500, 500, 500, 500, 500]
@@ -27,9 +27,9 @@ def base_settings(p):
 
 def clicktionary(p):
     base_settings(p)
-    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_100'
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_100'
     p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
     p['set_name'] = 'clicktionary'
-    p['set_indices'] = range(1000, 1020)
-    p['config']['HIT Configuration']['title'] = 'Animal Recognition S'
+    p['set_indices'] = range(2000, 2020)
+    p['config']['HIT Configuration']['title'] = 'Animal Realization'
     p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'

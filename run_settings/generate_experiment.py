@@ -28,10 +28,14 @@ def write_set_file(set_index, set_name, dst_filename):
     # Load set and convert to CSV
     src_fn = get_imageset_filename(set_index=set_index, set_name=set_name)
     data = open(src_fn, 'rt').read().splitlines()
+    class_identifiers = ['nonanimal', 'animal']
     with open(dst_filename, 'wt') as fid:
         fid.write('img,cat\n')
         for line in data:
-            fid.write(','.join(line.split('\t')) + '\n')
+            ll = line.split('\t')
+            fn = ll[0]
+            class_identifier = class_identifiers[int(ll[1])]
+            fid.write('%s,%s\n' % (fn, class_identifier))
 
 def write_values_to_config(settings, config_filename):
     cp = SafeConfigParser()
