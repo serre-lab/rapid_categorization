@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Load experimental and model data
 
+import re
 import sqlite3
 import json
 import numpy as np
@@ -178,10 +179,14 @@ class Data:
                 self.acc_by_im[img].append(t['score'])
             count += 1
 
-    def get_summary_by_revalation(self):
+    def get_summary_by_revalation(self, filename_filter=None):
         rev_scores = defaultdict(list)
         for im, score in self.acc_by_im.iteritems():
             rev, base_im = im.split('/')
+            base_im_name = re.findall('[a-zA-Z_]*', base_im)[0]
+            if filename_filter is not None:
+                if base_im_name not in filename_filter:
+                    continue
             rev_scores[int(rev)] += score
         revs = sorted(rev_scores.keys())
         scores = [rev_scores[rev] for rev in revs]
