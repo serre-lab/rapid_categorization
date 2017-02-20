@@ -33,3 +33,13 @@ def clicktionary(p):
     p['set_indices'] = range(2000, 2020)
     p['config']['HIT Configuration']['title'] = 'Animal Realization'
     p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
+
+def clicktionary50ms(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_50'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
+    p['set_name'] = 'clicktionary'
+    p['set_indices'] = range(2000, 2020)
+    p['config']['HIT Configuration']['title'] = 'Animal Realization'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
+    p['exp']['presentation_duration'] = 50
