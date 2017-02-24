@@ -2,7 +2,6 @@
 
 import xml.etree.ElementTree as ET
 import os
-import glob
 import pickle
 import random
 import requests
@@ -111,6 +110,7 @@ class ImageNet:
                     raise Exception("invalid file format")
                 class_name = class_entry.split(":")[0]
                 wnid_of_class = class_entry.split(":")[1]
+                # Breadth first search for all sub WordNet IDs related to class WordNet ID
                 wnid_list_of_class = self.all_wnids_of_class(xml_root, wnid_of_class)
 
                 self.wnid_map[category][class_name] = []
@@ -156,9 +156,24 @@ class ImageNet:
         :param wnid_of_class: WordNet ID representing class of interest.
         :return: List of WordNet IDs that exist under class of interest.
         """
+        element = None
         for synset in xml_root.iter():
-            if not (synset.findall("[@wnid=" + '\'' + wnid_of_class + '\'' + "]") == []):
-                wnid_list_of_class = synset.find("[@wnid=" + '\'' + wnid_of_class + '\'' + "]")
+            if synset.get("wnid") == wnid_of_class:
+                # We found the element with the correct WordNet ID.
+                element = synset
+                break
+
+        wnid_list_of_class = []
+        element_queue = [element]
+
+        # Do breadth-first traversal starting at element, appending each WordNet ID to the output list.
+        while len(element_queue) > 0:
+            current = element_queue.pop(0)
+            wnid_list_of_class.append(current)
+            element_queue += list(current)
+
+            #if synset.findall("[@wnid=" + '\'' + wnid_of_class + '\'' + "]") != []:
+            #    wnid_list_of_class = synset.findall("[@wnid=" + '\'' + wnid_of_class + '\'' + "]")
         return wnid_list_of_class
 
     def verify_image(self, image_filepath):
@@ -178,7 +193,7 @@ class ImageNet:
             # Check for white corners
             for x in [0, width - 1]:
                 for y in [0, height - 1]:
-                    if image_matrix[y,x] > 237:
+                    if image_matrix[y, x] > 237:
                         white_corners += 1
 
             # Check image size
@@ -188,7 +203,6 @@ class ImageNet:
             is_good_image = False
 
         return is_good_image
-
 
 
     def download_by_wnid(self, wnid, save_path, max_to_download):
@@ -214,23 +228,32 @@ class ImageNet:
                 image_request = \
                     requests.get(image_url, stream=True, verify=False, timeout=(1, 10))
 
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout,
+                    requests.exceptions.TooManyRedirects) as e:
+                # print "Unable to download image at", image_url, "for reason:", e
                 missed_images.append(image_number)
                 continue
 
             if image_request.status_code == 200:
+                image_successful_download = True
                 with open(save_filename, 'wb') as f:
-                    for image_chunk in image_request:
-                        f.write(image_chunk)
+                    # If there is a "requests.exceptions.ConnectionError:
+                    # HTTPConnectionPool(host='auto.people.com.cn', port=80): Read timed out."
+                    # break and append the image to missed_images
+                    try:
+                        for image_chunk in image_request:
+                            f.write(image_chunk)
+                    except:
+                        image_successful_download = False
+                        missed_images.append(image_number)
 
-                if self.verify_image(save_filename):
+                if image_successful_download and self.verify_image(save_filename):
                     num_images_downloaded += 1
-
                     if num_images_downloaded == max_to_download:
                         break
-
                     continue
 
+                # print "Image failed to verify:", image_url
                 os.remove(save_filename)
             missed_images.append(image_number)
 
@@ -250,7 +273,6 @@ class ImageNet:
 
             for class_name in self.wnid_map[category]:
                 print "Number of images to download & class name: ", num_images_to_download, class_name
-
 
                 num_remaining = num_images_to_download
                 save_path = os.path.join(self.raw_images_path, category, class_name)
@@ -315,6 +337,8 @@ class ImageNet:
                     num_images_to_download - num_remaining, class_name
                 self.wnid_map[category][class_name] = wnids_downloaded
 
+        print "Image fetching complete."
+
     # System for manual deletion, then rebalancing afterwards
     # (delete everything but necessary number of images for one set)
     def rebalance_img_set(self, desired_number_images_per_class):
@@ -330,6 +354,8 @@ class ImageNet:
                 os.remove(os.path.join(root, files[random_index]))
                 del files[random_index]
                 current_number_images_in_class -= 1
+
+        print "Image set rebalancing complete."
 
     def prepare_img_set(self):
         """
@@ -360,6 +386,8 @@ class ImageNet:
                 os.remove(file_path)
                 image.convert('RGB').save(file_path+'.jpg')
 
+        print "Image preparation complete."
+
     def compile_and_norm_img_set(self):
         """
         Compiles image set from the individual class folders to create one set,
@@ -384,6 +412,8 @@ class ImageNet:
                         images[file] = image_array
                 image_set_global_mean = np.mean(image_mean_list)
 
+        print "Compilation and normalization complete."
+
         # Add global mean to each image
         for file in images:
             image_array = images[file]
@@ -405,6 +435,8 @@ class ImageNet:
         serialized_wnid_url_map_path = open(self.serialized_wnid_url_map_path, 'wb')
         pickle.dump(self.wnid_url_map, serialized_wnid_url_map_path)
         serialized_wnid_url_map_path.close()
+
+        print "Pickling complete."
 
 
 
