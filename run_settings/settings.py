@@ -8,12 +8,13 @@ def base_settings(p):
     p['exp']['num_blocks'] = 6
     p['exp']['fixation_duration'] = 500
     p['exp']['presentation_duration'] = 100
-    p['exp']['training_presentation_durations'] = [500, 500, 500, 500, 200, 200, 100, 100]
+    p['exp']['training_presentation_durations'] = [500, 500, 200, 200, 100, 100]
     p['exp']['max_answer_times'] = [500, 500, 500, 500, 500, 500]
     p['exp']['max_training_answer_time'] = 1500
     p['exp']['answer_keys'] = [83, 76]
     p['exp']['answers'] = ['S', 'L']
     p['exp']['answer_strings'] = ['animal', 'non-animal']
+    p['exp']['imagelist_identifiers'] = ['animal', 'nonanimal'] # Identifiers used in csv file
     p['exp']['example_stims'] = ["static/examples/ex1n.webm",
                           "static/examples/ex1a.webm",
                           "static/examples/ex2n.webm",
@@ -23,6 +24,12 @@ def base_settings(p):
     p['exp']['example_stim_len'] = [1300, 1300, 1300, 1300, 1300, 1300]
     p['exp']['example_answers'] = [1, 0, 1, 0, 0, 1]
     p['exp']['example_pretime'] = 1100
+    p['identifiers'] = {}
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> or <emph>non-animal</emph> image (including artificial and natural objects and scenes).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'non-animal'
+    p['identifiers']['Class2'] = 'Non-animal'
 
 
 def clicktionary(p):
@@ -36,10 +43,34 @@ def clicktionary(p):
 
 def clicktionary50ms(p):
     base_settings(p)
+    # Only set 1, 50ms presentation time, animal vs vehicle
     p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_50'
-    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
     p['set_name'] = 'clicktionary'
-    p['set_indices'] = range(2000, 2020)
-    p['config']['HIT Configuration']['title'] = 'Animal Realization'
-    p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
+    p['set_indices'] = range(3000, 3020)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal or a vehicle' # sic
+    p['exp']['presentation_duration'] = 50
+
+def clicktionary50msfull(p):
+    base_settings(p)
+    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_50'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_indices'] = range(4000, 4022)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
     p['exp']['presentation_duration'] = 50

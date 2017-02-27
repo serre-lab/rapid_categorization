@@ -9,6 +9,7 @@ from hmax.levels import util
 from results_key import label_results
 from scipy import stats
 from collections import defaultdict
+from rapid_categorization.clicktionary.config import get_experiment_sets
 
 class Data:
     def __init__(self):
@@ -45,9 +46,10 @@ class Data:
         self.ignore_timeouts = True
         self.correct_rts = []
 
-    def load(self, set_index, set_name='turk'):
+    def load(self, experiment_run):
+        set_index, set_name = get_experiment_sets(experiment_run)
         self.load_ground_truth(set_index, set_name)
-        self.load_participants(set_index, set_name)
+        self.load_participants(experiment_run)
 
     def load_ground_truth(self, set_index, set_name):
         imageset_filename = util.get_imageset_filename(set_index, set_name)
@@ -55,15 +57,15 @@ class Data:
         self.im2lab.update(label_results(imageset_filename))
         self.loaded_sets += [(set_index, set_name)]
 
-    def load_participant_json(self, set_index, set_name='turk', verbose=True):
-        exp_filename = util.get_experiment_db_filename(set_index, set_name)
+    def load_participant_json(self, experiment_run, verbose=True):
+        exp_filename = util.get_experiment_db_filename_by_run(experiment_run)
         r = sqlite3.connect(exp_filename).cursor().execute(
             "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in (3,4) AND NOT datastring==''").fetchall()
         if verbose: print "%d participants found in file %s." % (len(r), exp_filename)
         return r
 
-    def load_participants(self, set_index, set_name='turk'):
-        r = self.load_participant_json(set_index, set_name, verbose=True)
+    def load_participants(self, experiment_run):
+        r = self.load_participant_json(experiment_run, verbose=True)
         for i_subj in range(0,len(r)):
             data = json.loads(r[i_subj][3])
             self.load_subject(data)
@@ -183,6 +185,8 @@ class Data:
         rev_scores = defaultdict(list)
         for im, score in self.acc_by_im.iteritems():
             rev, base_im = im.split('/')
+            if rev ==  'full':
+                rev = -10
             base_im_name = re.findall('[a-zA-Z_]*', base_im)[0]
             if filename_filter is not None:
                 if base_im_name not in filename_filter:

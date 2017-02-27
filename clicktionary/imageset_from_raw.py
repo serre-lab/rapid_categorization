@@ -24,4 +24,4 @@ def convert_raw_imageset(set_index, set_name):
 
 
 if __name__ == '__main__':
-    convert_raw_imageset(50, 'clicktionary')
+    convert_raw_imageset(70, 'clicktionary')

@@ -61,14 +61,14 @@
 
   var instructions_block = {
     type: "text",
-    text: "<h3>Welcome!</h3><p>In this experiment, you will see photographs of different settings very briefly. Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> or <emph>non-animal</emph> image (including artificial and natural objects and scenes).</p>"+
-      "<p>For <strong>animal</strong> scenes, press the letter <strong>"+answers[0]+"</strong> on the keyboard as fast as you can.</p>" +
-      "<p>For <strong>non-animal</strong> scenes, press the letter <strong>"+answers[1]+"</strong> on the keyboard as fast as you can.</p>" +
+    text: "<h3>Welcome!</h3><p>In this experiment, you will see photographs of different settings very briefly. {{taskexpl}}</p>"+
+      "<p>For <strong>{{class1}}</strong> scenes, press the letter <strong>"+answers[0]+"</strong> on the keyboard as fast as you can.</p>" +
+      "<p>For <strong>{{class2}}</strong> scenes, press the letter <strong>"+answers[1]+"</strong> on the keyboard as fast as you can.</p>" +
       "<p>Examples:</p>" +
-      "<div class='left center-content'><img src='/static/examples/animalintro.png'></img>" +
-      "<p class='small'><strong>Animal scene - press the "+answers[0]+" key</strong></p></div>" +
-      "<div class='right center-content'><img src='/static/examples/nonanimalintro.png'></img>" +
-      "<p class='small'><strong>Non-animal scene - press the "+answers[1]+" key</strong></p></div>" +
+      "<div class='left center-content'><img src='/static/examples/class1intro.png'></img>" +
+      "<p class='small'><strong>{{Class1}} scene - press the "+answers[0]+" key</strong></p></div>" +
+      "<div class='right center-content'><img src='/static/examples/class2intro.png'></img>" +
+      "<p class='small'><strong>{{Class2}} scene - press the "+answers[1]+" key</strong></p></div>" +
       "<p>Press any key to begin.</p>",
     timing_post_trial: 2000
   };
@@ -103,14 +103,14 @@
     type: "s2stim",
     stimuli: [],
     choices: answer_keys,
-    timeout_message: "<font size='40'>TOO SLOW!</font><br><img src='/static/images/err.png'>Remember to press <strong>"+answers[0]+"</strong> for animal and press <strong>"+answers[1]+"</strong> for non-animal images.<br><small>(and if you don't know, just guess).</small><br><p>Press any key to continue.</p>",
+    timeout_message: "<font size='40'>TOO SLOW!</font><br><img src='/static/images/err.png'>Remember to press <strong>"+answers[0]+"</strong> for {{class1}} and press <strong>"+answers[1]+"</strong> for {{class2}} images.<br><small>(and if you don't know, just guess).</small><br><p>Press any key to continue.</p>",
     reponse_ends_trial: true,
     onset_index: 1,
     answer_show_time: 0,
     answer_strings: answer_strings,
     answer_keys: answers,
     answer_codes: answer_keys,
-    base_html: "<div class='reminderbox'>Press <strong>"+answers[0]+"</strong> for animal and press <strong>"+answers[1]+"</strong> for non-animal images.</div>"
+    base_html: "<div class='reminderbox'>Press <strong>"+answers[0]+"</strong> for {{class1}} and press <strong>"+answers[1]+"</strong> for {{class2}} images.</div>"
   };
 
   var test_blocks = [];
@@ -170,7 +170,8 @@
     for (var i = 0; i < trials.length; i++)
     {
       if (trials[i].rt > -1 && trials[i].true_response == trials[i].response) ++sum_correct;
-      if (trials[i].rt > -1) ++sum_trials_answered;
+      //if (trials[i].rt > -1) ++sum_trials_answered;
+      ++sum_trials_answered;
     }
     if (sum_trials_answered == 0) sum_trials_answered = 1;
     return Math.round(sum_correct * 100 / sum_trials_answered);
@@ -240,8 +241,8 @@
               var stim_fn = '/static/dataset/' + lines[i_trial].img + '/' + trial_pretime + '.webm';
               trial = { stimulus: stim_fn, width: 256, height: 256, onset: trial_pretime, duration: trial_pretime + presentation_duration + max_answer_times[i_block] };
               //console.log("trial: " + stim_fn);
-              var correct_answer;
-              if (lines[i_trial].cat == 'animal') correct_answer = 0; else correct_answer = 1;
+              var correct_answer = imagelist_identifiers.indexOf(lines[i_trial].cat);
+              if (correct_answer == -1) console.log("WARNING: Unknown category " + lines[i_trial].cat + " in line " + i_trial);
               all_trial_images.push(trial);
               all_correct_answers.push(correct_answer);
             };

@@ -12,9 +12,16 @@ from ConfigParser import SafeConfigParser
 def apply_dict_to_template(src_filename, dst_filename, settings):
     # Replace placeholders in src filename and save to dst filename
     data = open(src_filename, 'rt').read()
+    n_replaced = 0
+    replaced_strings = set()
     for k, v in settings.iteritems():
-        data = data.replace('{{%s}}' % k, str(v))
+        key_string = '{{%s}}' % k
+        n = data.count(key_string)
+        n_replaced += n
+        if n: replaced_strings.add(k)
+        data = data.replace(key_string, str(v))
     open(dst_filename, 'wt').write(data)
+    print 'Replaced %d strings %s in %s' % (n_replaced, str(replaced_strings), dst_filename)
 
 def dict_to_js(settings, dst_filename):
     # Save all entries in settings dictionary to javascript
@@ -45,6 +52,14 @@ def write_values_to_config(settings, config_filename):
             cp.set(sect_name, k, str(v))
     cp.write(open(config_filename, 'wt'))
 
+def apply_dict_to_tree(root_path, extensions, settings):
+    for subdir, dirs, files in os.walk(root_path):
+        for file in files:
+            _, ext = os.path.splitext(file)
+            if ext.lower() in extensions:
+                fn_full = os.path.join(subdir, file)
+                apply_dict_to_template(fn_full, fn_full, settings)
+
 def generate_experiment(name, force_overwrite=False, deploy=False):
     # Get settings
     p = {}
@@ -60,6 +75,8 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
         shutil.rmtree(run_path)
     # Copy base experiment
     shutil.copytree(base_path, run_path, symlinks=True)
+    # Apply string replacements
+    apply_dict_to_tree(run_path, ['.html', '.js'], p['identifiers'])
     # Link videos
     os.symlink(p['video_base_path'], os.path.join(run_path, 'static', 'dataset'))
     os.symlink(p['example_path'], os.path.join(run_path, 'static', 'examples'))
@@ -80,5 +97,5 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('clicktionary50ms', force_overwrite=True, deploy=True)
+    generate_experiment('clicktionary50msfull', force_overwrite=True, deploy=True)
     sync_stimuli()

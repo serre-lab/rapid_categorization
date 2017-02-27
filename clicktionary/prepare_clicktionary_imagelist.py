@@ -14,11 +14,11 @@ def load_classes():
         class_map[ll[0]] = int(ll[1])
     return class_map
 
-def collect_images():
-    out_fn = os.path.join(imageset_base_path, 'raw_images_60.txt')
+def collect_images(subpath, set_index):
+    out_fn = os.path.join(imageset_base_path, 'raw_images_%d.txt' % set_index)
     class_map = load_classes()
     with open(out_fn, 'wt') as fid:
-        for root, dirs, files in os.walk(imageset_base_path):
+        for root, dirs, files in os.walk(os.path.join(imageset_base_path, subpath)):
             print 'Processing images in %s...' % root
             for file in files:
                 _, ext = os.path.splitext(file)
@@ -32,4 +32,4 @@ def collect_images():
                 fid.write('%s\t%d\n' % (full_fn, class_index))
 
 if __name__ == '__main__':
-    print collect_images()
+    print collect_images(subpath='clicktionary_masked_images_balanced_cut', set_index=70)
