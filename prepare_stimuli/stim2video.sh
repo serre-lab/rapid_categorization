@@ -5,17 +5,18 @@
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 # Parameter checks
-if [ $# -lt 4 ]; then
-	echo "Usage: $0 input_image output_video fix_time_ms after_time_ms fps"
-	echo "  e.g.: $0 scene.png scene.webm 1000 500 60"
+if [ $# -lt 6 ]; then
+	echo "Usage: $0 input_image output_video fix_time_ms stim_show_time_ms after_time_ms fps"
+	echo "  e.g.: $0 scene.png scene.webm 1000 20 500 50"
 	exit 1
 fi
 
 INIMG="$1"
 OUTVID="$2"
 FIXTIMEMS=$3
-AFTERTIMEMS=$4
-FPS=$5
+STIMTIMEMS=$4
+AFTERTIMEMS=$5
+FPS=$6
 
 if [ ! -f "$INIMG" ]; then
 	echo "Input file $INIMG not found."
@@ -23,7 +24,7 @@ if [ ! -f "$INIMG" ]; then
 fi
 
 # Make sure fix point frames exist
-if [ ! -h "tmp/img0000.png" ]; then
+if [ ! -h "tmp/img1000.png" ]; then
 	./mkfixframes.sh
 else
 	echo "Fix frames prepared."
@@ -32,16 +33,20 @@ fi
 # Calculate frame indices
 FIXFRAMES=$((FIXTIMEMS * FPS / 1000))
 AFTERFRAMES=$((AFTERTIMEMS * FPS / 1000))
-NUMFRAMES=$((FIXFRAMES + AFTERFRAMES + 1))
-STIMFRAME=500
-STARTFRAME=$((STIMFRAME - FIXFRAMES))
-echo "Using sequence from $STARTFRAME to $((STARTFRAME+NUMFRAMES-1))."
+STIMFRAMES=$((STIMTIMEMS * FPS / 1000))
+NUMFRAMES=$((FIXFRAMES + STIMFRAMES + AFTERFRAMES))
+STIMFRAMEA=1500
+STIMFRAMEB=$((STIMFRAMEA + STIMFRAMES - 1))
+STARTFRAME=$((STIMFRAMEA - FIXFRAMES))
+echo "Using sequence from $STARTFRAME to $((STARTFRAME+NUMFRAMES-1)) with $STIMFRAMES stimulus frames from $STIMFRAMEA to $STIMFRAMEB."
 
 # Put stimulus into sequence
 IMGDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-rm -f $IMGDIR/tmp/img0500.png
-echo ln -s $(readlink -f $INIMG) $IMGDIR/tmp/img0500.png
-ln -s $(readlink -f $INIMG) $IMGDIR/tmp/img0500.png
+for i in $(seq -w $STIMFRAMEA $STIMFRAMEB); do
+    rm -f $IMGDIR/tmp/img$i.png
+    echo ln -s $(readlink -f $INIMG) $IMGDIR/tmp/img$i.png
+    ln -s $(readlink -f $INIMG) $IMGDIR/tmp/img$i.png
+done
 
 # Delete previous
 if [ -f "$OUTVID" ]; then

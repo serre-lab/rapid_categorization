@@ -10,6 +10,7 @@ def base_settings(p):
     p['exp']['presentation_duration'] = 100
     p['exp']['training_presentation_durations'] = [500, 500, 200, 200, 100, 100]
     p['exp']['max_answer_times'] = [500, 500, 500, 500, 500, 500]
+    p['exp']['trial_pretimes'] = [1100, 1200, 1300, 1400, 1500]
     p['exp']['max_training_answer_time'] = 1500
     p['exp']['answer_keys'] = [83, 76]
     p['exp']['answers'] = ['S', 'L']
@@ -74,3 +75,21 @@ def clicktionary50msfull(p):
     p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
     p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
     p['exp']['presentation_duration'] = 50
+
+def clicktionary400msfull(p):
+    base_settings(p)
+    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_400'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_images_balanced_cut'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_indices'] = range(4000, 4022)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400

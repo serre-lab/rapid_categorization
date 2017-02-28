@@ -1,11 +1,12 @@
 #!/bin/bash
 # Create symlink-copies of fixation frame to be read by ffmpeg video generation
 
-if [ ! -h "tmp/img0000.png" ]; then
-	mkdir tmp/
-	for i in $(seq -w 0000 1000); do
-		ln -s $(pwd)/fix.png "tmp/img${i}.png"
-		echo $i
+targetpath=${1:-tmp}
+
+if [ ! -h "$targetpath/img1000.png" ]; then
+	mkdir "$targetpath/"
+	for i in $(seq -w 1000 2000); do
+		ln -s $(pwd)/fix.png "$targetpath/img${i}.png"
 	done
 else
 	echo "Fix frames already exist."

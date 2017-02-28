@@ -8,6 +8,7 @@ from hmax.levels.util import get_imageset_filename
 from rapid_categorization.config import psiturk_run_path
 import subprocess
 from ConfigParser import SafeConfigParser
+from rapid_categorization.prepare_stimuli import generate_stimulus_videos
 
 def apply_dict_to_template(src_filename, dst_filename, settings):
     # Replace placeholders in src filename and save to dst filename
@@ -21,7 +22,8 @@ def apply_dict_to_template(src_filename, dst_filename, settings):
         if n: replaced_strings.add(k)
         data = data.replace(key_string, str(v))
     open(dst_filename, 'wt').write(data)
-    print 'Replaced %d strings %s in %s' % (n_replaced, str(replaced_strings), dst_filename)
+    if n_replaced:
+        print 'Replaced %d strings %s in %s' % (n_replaced, str(replaced_strings), dst_filename)
 
 def dict_to_js(settings, dst_filename):
     # Save all entries in settings dictionary to javascript
@@ -73,6 +75,16 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
         if not force_overwrite:
             raise RuntimeError('Experiment at %s already exists.' % run_path)
         shutil.rmtree(run_path)
+    # Generate image sets
+    video_base_path = p['video_base_path']
+    if not os.path.isdir(video_base_path):
+        onset_times_ms = p['exp']['trial_pretimes']
+        after_time_ms = max(p['exp']['max_answer_times'])
+        input_image_path = p['input_image_path']
+        stim_show_time_ms = p['exp']['presentation_duration']
+        generate_stimulus_videos(input_image_path, video_base_path, onset_times_ms, after_time_ms, stim_show_time_ms=stim_show_time_ms)
+    else:
+        print 'Using existing videos at %s' % video_base_path
     # Copy base experiment
     shutil.copytree(base_path, run_path, symlinks=True)
     # Apply string replacements
@@ -97,5 +109,5 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('clicktionary50msfull', force_overwrite=True, deploy=True)
+    generate_experiment('clicktionary400msfull', force_overwrite=True, deploy=True)
     sync_stimuli()
