@@ -148,7 +148,7 @@
         "<p>You've done <strong>" + getPercentCorrect(trials) + "%</strong> correct trials.</p>" +
         "<p>Your average response time was <strong>" +
         getAverageResponseTime(trials) + "ms</strong>. </p>" +
-        "In the next block you will have <strong>"+ max_answer_times[num_blocks_done] + "ms</strong> to respond.</p>" + "<p>Press any key to continue the experiment.</p>";
+        "In the next block you will have <strong>"+ (presentation_duration + max_answer_times[num_blocks_done]) + "ms</strong> to respond.</p>" + "<p>Press any key to continue the experiment.</p>";
     }
   };
 
@@ -237,7 +237,7 @@
             var i_last_trial = Math.round((i_block+1) * num_trials / num_blocks);
             test_blocks[i_block] = Object.create(base_test_block);
             for (; i_trial < i_last_trial; i_trial++) {
-              var trial_pretime = trial_pretimes[Math.floor(Math.random() * stimulus_pretimes.length)];
+              var trial_pretime = trial_pretimes[Math.floor(Math.random() * trial_pretimes.length)];
               var stim_fn = '/static/dataset/' + lines[i_trial].img + '/' + trial_pretime + '.webm';
               trial = { stimulus: stim_fn, width: 256, height: 256, onset: trial_pretime, duration: trial_pretime + presentation_duration + max_answer_times[i_block] };
               //console.log("trial: " + stim_fn);
