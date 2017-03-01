@@ -9,7 +9,7 @@ from hmax.levels import util
 from results_key import label_results
 from scipy import stats
 from collections import defaultdict
-from rapid_categorization.clicktionary.config import get_experiment_sets
+from rapid_categorization.clicktionary.config import get_experiment_sets, experiment_descs
 
 class Data:
     def __init__(self):
@@ -45,6 +45,7 @@ class Data:
         self.n_timeouts = 0
         self.ignore_timeouts = True
         self.correct_rts = []
+        self.workerIds = []
 
     def load(self, experiment_run):
         set_index, set_name = get_experiment_sets(experiment_run)
@@ -68,7 +69,13 @@ class Data:
         r = self.load_participant_json(experiment_run, verbose=True)
         for i_subj in range(0,len(r)):
             data = json.loads(r[i_subj][3])
+            import ipdb;ipdb.set_trace()
             self.load_subject(data)
+
+    def get_participant_ids(self, experiment_run):
+        r = self.load_participant_json(experiment_run, verbose=True)
+        for i_subj in range(0,len(r)):
+            self.workerIds.append(json.loads(r[i_subj][3])['workerId'])
 
     def load_im2path(self, experiment_ids):
         self.im2path = {}
@@ -317,10 +324,22 @@ class Data:
             print 'Class %s RT: %.1fms (animal=%.1fms, nonanimal=%.1fms)' % (class_name, np.mean(rts['animal'] + rts['nonanimal']), np.mean(rts['animal']),np.mean(rts['nonanimal']))
 
 
-# Test
 if __name__ == '__main__':
+    """Test: Check for duplicate subs."""
     data = Data()
-    data.load(set_index=50, set_name='clicktionary')
-    revs, scores = data.get_summary_by_revalation()
-    print revs
-    print scores
+    # data.load_ground_truth(set_index=50, set_name='clicktionary')
+    # revs, scores = data.get_summary_by_revalation()
+    # print revs
+    # print scores
+    for exp_name in experiment_descs.keys():
+        if re.search('\d+', exp_name) is not None:
+            # Ignore the original clicktionary exp in the config
+            print exp_name
+            data.get_participant_ids(experiment_run=exp_name)
+    s = set()
+    dup_workers = list(set(x for x in data.workerIds if x in s or s.add(x)))
+
+    if dup_workers is not None:
+        print 'Found repeat workers: %s' % dup_workers
+    else:
+        print 'No repeat workers!'
