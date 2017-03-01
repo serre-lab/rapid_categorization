@@ -16,4 +16,4 @@ def pull_results(experiment_run):
 
 
 if __name__ == '__main__':
-    pull_results('clicktionary50msfull')
+    pull_results('clicktionary400ms150msfull')

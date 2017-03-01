@@ -11,7 +11,7 @@ from rapid_categorization.clicktionary import config
 import pickle
 from scipy.stats import norm
 
-def get_cnn_results_by_revalation(set_index, off=0.0, include_true_labels=False):
+def get_cnn_results_by_revelation(set_index, off=0.0, include_true_labels=False):
     pickle_name=os.path.join(config.pickle_path, 'perf_by_revalation_clicktionary_%d.p' % set_index)
     with open(pickle_name) as f:
         data = pickle.load(f)
@@ -25,16 +25,16 @@ def get_cnn_results_by_revalation(set_index, off=0.0, include_true_labels=False)
 def get_human_results_by_revaluation(experiment_run, filename_filter=None, off=0.0):
     data = Data()
     data.load(experiment_run=experiment_run)
-    revs, scores = data.get_summary_by_revalation(filename_filter=filename_filter)
+    revs, scores = data.get_summary_by_revelation(filename_filter=filename_filter)
     data = np.array([(100.0 - r + off, s) for r, score in zip(revs, scores) for s in score])
     return data
 
 def do_plot(data, clr, label):
-    df = pd.DataFrame(data, columns=['Revalation', 'correctness'])
-    df = df[df['Revalation'] > 0]
+    df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
+    df = df[df['Revelation'] > 0]
     estimator = np.mean
     ax = sns.regplot(
-        data=df, x='Revalation', y='correctness', ci=95, n_boot=10,
+        data=df, x='Revelation', y='correctness', ci=95, n_boot=10,
         x_estimator=estimator, color=clr, truncate=True, fit_reg=True, order=3, label=label) # , logistic=False
     ax.set_xticks(np.linspace(0, 100, 11))
 
@@ -73,8 +73,9 @@ def do_plot_dprime(data, clr, label):
     plt.plot(urevs, fas, clr + 'v', label = ' false negative')
     plt.plot(urevs, ms, clr + 'o', label = ' mean accuracy')
 
-def plot_results_by_revaluation_by_class(set_index, set_name='clicktionary'):
-    data_cnn = get_cnn_results_by_revalation(set_index)
+def plot_results_by_revaluation_by_class(experiment_run):
+    set_index, set_name = config.get_experiment_sets(experiment_run)
+    data_cnn = get_cnn_results_by_revelation(set_index)
     exps = [set(), set()]
     for i ,fn in enumerate(['classes_exp_1.txt', 'classes_exp_2.txt']):
         fn_full = os.path.join('/media/data_cifs/clicktionary/causal_experiment', fn)
@@ -92,14 +93,14 @@ def plot_results_by_revaluation_by_class(set_index, set_name='clicktionary'):
     do_plot(data_cnn, 'black', 'CNN')
     do_plot(data_human1, 'red', 'Human Non-animal')
     do_plot(data_human2, 'green', 'Human Animal')
-    plt.title('Accuracy by image revalation')
+    plt.title('Accuracy by image revelation')
     plt.legend()
-    plt.savefig(os.path.join(config.plot_path, 'perf_by_revalation_by_class_%s_%d_.png' % (set_name, set_index)))
-    plt.savefig(os.path.join(config.plot_path, 'perf_by_revalation_by_class_%s_%d_.pdf' % (set_name, set_index)))
+    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_by_class_%s.png' % experiment_run))
+    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_by_class_%s.pdf' % experiment_run))
 
 def plot_human_dprime(experiment_run):
     set_index, set_name = config.get_experiment_sets(experiment_run)
-    data_cnn = get_cnn_results_by_revalation(set_index, include_true_labels=True)
+    data_cnn = get_cnn_results_by_revelation(set_index, include_true_labels=True)
     exps = [set(), set()]
     for i ,fn in enumerate(['classes_exp_1.txt', 'classes_exp_2.txt']):
         fn_full = os.path.join('/media/data_cifs/clicktionary/causal_experiment', fn)
@@ -111,30 +112,32 @@ def plot_human_dprime(experiment_run):
     data_nonanimal = get_human_results_by_revaluation(experiment_run, filename_filter=exps[1], off=0)
     is_animal = np.vstack((np.ones((data_animal.shape[0], 1)), np.zeros((data_nonanimal.shape[0], 1))))
     data_all = np.hstack((np.vstack((data_animal, data_nonanimal)), is_animal))
-    do_plot_dprime(data_all, 'b', 'Human')
-    do_plot_dprime(data_cnn, 'r', 'CNN')
+    do_plot_dprime(data_all, 'r', 'Human')
+    do_plot_dprime(data_cnn, 'k', 'CNN')
+    plt.title('dPrime by image revelation\n' + config.get_experiment_desc(experiment_run))
     plt.legend()
-    plt.savefig(os.path.join(config.plot_path, 'dprime_by_revalation_%s_%d_.pdf' % (set_name, set_index)))
-    plt.savefig(os.path.join(config.plot_path, 'dprime_by_revalation_%s_%d_.png' % (set_name, set_index)))
+    plt.savefig(os.path.join(config.plot_path, 'dprime_by_revelation_%s.pdf' % experiment_run))
+    plt.savefig(os.path.join(config.plot_path, 'dprime_by_revelation_%s.png' % experiment_run))
 
-def plot_results_by_revaluation(experiment_run='clicktionary'):
+def plot_results_by_revelation(experiment_run='clicktionary'):
     set_index, set_name = config.get_experiment_sets(experiment_run)
-    data_cnn = get_cnn_results_by_revalation(set_index)
+    data_cnn = get_cnn_results_by_revelation(set_index)
     data_human = get_human_results_by_revaluation(experiment_run, off=1)
     sns.set_style('white')
     do_plot(data_cnn, 'black', 'CNN')
     do_plot(data_human, 'red', 'Human')
-    plt.title('Accuracy by image revalation')
+    plt.title('Accuracy by image revelation\n' + config.get_experiment_desc(experiment_run))
     plt.legend()
-    plt.savefig(os.path.join(config.plot_path, 'perf_by_revalation_%s_%d_.png' % (set_name, set_index)))
-    plt.savefig(os.path.join(config.plot_path, 'perf_by_revalation_%s_%d_.pdf' % (set_name, set_index)))
+    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
+    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
 
 
 if __name__ == '__main__':
-    experiment_run = 'clicktionary50msfull'
-    plot_results_by_revaluation(experiment_run=experiment_run)
-    #plt.figure()
-    #plot_human_dprime(experiment_run)
+    for exp in ['clicktionary50msfull', 'clicktionary400msfull', 'clicktionary400ms150msfull']:
+        plt.figure()
+        plot_results_by_revelation(experiment_run=exp)
+        plt.figure()
+        plot_human_dprime(exp)
     #plot_results_by_revaluation_by_class(set_index=50, set_name='clicktionary')
     #plot_human_dprime(set_index=50)
     plt.show()

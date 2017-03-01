@@ -181,7 +181,7 @@ class Data:
                 self.acc_by_im[img].append(t['score'])
             count += 1
 
-    def get_summary_by_revalation(self, filename_filter=None):
+    def get_summary_by_revelation(self, filename_filter=None):
         rev_scores = defaultdict(list)
         for im, score in self.acc_by_im.iteritems():
             rev, base_im = im.split('/')
