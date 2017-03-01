@@ -69,7 +69,6 @@ class Data:
         r = self.load_participant_json(experiment_run, verbose=True)
         for i_subj in range(0,len(r)):
             data = json.loads(r[i_subj][3])
-            import ipdb;ipdb.set_trace()
             self.load_subject(data)
 
     def get_participant_ids(self, experiment_run):
