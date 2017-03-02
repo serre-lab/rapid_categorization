@@ -8,6 +8,7 @@ def base_settings(p):
     p['exp']['num_blocks'] = 6
     p['exp']['fixation_duration'] = 500
     p['exp']['presentation_duration'] = 100
+    p['exp']['pretraining'] = 0
     p['exp']['training_presentation_durations'] = [500, 500, 200, 200, 100, 100]
     p['exp']['max_answer_times'] = [500, 500, 500, 500, 500, 500]
     p['exp']['trial_pretimes'] = [1100, 1200, 1300, 1400, 1500]
@@ -132,3 +133,4 @@ def clicktionary400msvaranswerfull(p):
     p['exp']['presentation_duration'] = 400
     p['exp']['num_blocks'] = 5
     p['exp']['max_answer_times'] = [100, 200, 300, 400, 500]
+    p['exp']['pretraining'] = 1

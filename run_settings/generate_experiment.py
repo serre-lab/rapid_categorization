@@ -78,6 +78,8 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
     # Generate image sets
     video_base_path = p['video_base_path']
     if not os.path.isdir(video_base_path):
+        print 'Did not found videos at %s' % video_base_path
+        print 'Generating...'
         onset_times_ms = p['exp']['trial_pretimes']
         after_time_ms = max(p['exp']['max_answer_times'])
         input_image_path = p['input_image_path']
@@ -109,5 +111,5 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('clicktionary400msvaranswerfull', force_overwrite=True, deploy=True)
-    sync_stimuli()
+    generate_experiment('clicktionary400msvaranswerfull', force_overwrite=True, deploy=False)
+    #sync_stimuli()

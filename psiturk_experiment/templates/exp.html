@@ -116,29 +116,44 @@
   var test_blocks = [];
 
   /* training block */
+  function create_training_block(stimuli=0){
+    var training_block = Object.create(base_test_block);
+    training_block.correct_answers = example_answers;
+    training_block.answer_show_time = 1500;
+    training_block.stimuli = [];
+    for (var i=0; i<example_stims.length; ++i) {
+      if (stimuli === 0){
+        trial = { stimulus: example_stims[i], width: 256, height: 256, onset: example_pretime, duration: example_stim_len[i] + max_training_answer_time, answer_keys: answers, answer_codes: answer_keys};
+      }else{
+        trial = { stimulus: example_stims[i], width: 256, height: 256, onset: stimuli[i].onset, duration: stimuli[i].duration, answer_keys: answers, answer_codes: answer_keys};
+        console.log('trial: ', trial)
+      }
 
-  var training_block = Object.create(base_test_block);
-  training_block.correct_answers = example_answers;
-  training_block.answer_show_time = 1500;
-  training_block.stimuli = [];
-  for (var i=0; i<example_stims.length; ++i) {
-    trial = { stimulus: example_stims[i], width: 256, height: 256, onset: example_pretime, duration: example_stim_len[i] + max_training_answer_time, answer_keys: answers, answer_codes: answer_keys};
-    training_block.stimuli.push(trial);
+      training_block.stimuli.push(trial);
+    }
+    return training_block
   }
+  training_block = create_training_block();
 
   /* debrief block */
-
   var training_debrief_block = {
     type: "text",
     text: function() {
       var trials = jsPsych.data.getTrialsFromChunk(last_chunk_id);
       return "<p><h2>Example trials completed.</h2><p>You've done <strong>" + getPercentCorrect(trials) + "%</strong> correct trials.</p>" +
-        "<p>Now, presentation time for the test blocks will be a lot shorter and you won't get feedback. <strong>You should try to answer very fast!</strong> For the first block you will have <strong>"+max_answer_times[0]+"ms</strong> to respond. Good luck!</p>" +
+        "<p>Presentation time of images in the main experiment, coming up next, is a lot shorter and you won't get feedback on whether or not you were correct. <strong>You should try to answer very fast!</strong> For the first block you will have <strong>"+max_answer_times[0]+"ms</strong> to respond. Good luck!</p>" +
         "<p>Press any key to start the experiment!</p>";
     }
   };
 
   var num_blocks_done = 0;
+
+  if (pretraining == 0){
+    var training_statement = ""
+  }else
+  {
+    var training_statement = "<p><strong>To help you get used to the timing of this next round we will have you first complete a few training trials.</strong></p>"
+  }
   var block_debrief_block = {
     type: "text",
     text: function() {
@@ -148,9 +163,12 @@
         "<p>You've done <strong>" + getPercentCorrect(trials) + "%</strong> correct trials.</p>" +
         "<p>Your average response time was <strong>" +
         getAverageResponseTime(trials) + "ms</strong>. </p>" +
-        "In the next block you will have <strong>"+ (presentation_duration + max_answer_times[num_blocks_done]) + "ms</strong> to respond.</p>" + "<p>Press any key to continue the experiment.</p>";
+        "In the next block you will have <strong>"+ (presentation_duration + max_answer_times[num_blocks_done]) + "ms</strong> to respond.</p>" + training_statement + "<p>Press any key to continue the experiment.</p>";
     }
   };
+
+
+
 
   var overall_debrief_block = {
     type: "text",
@@ -192,21 +210,30 @@
 
 
   /* define experiment structure */
-
   var experiment_blocks = [];
 
   function setupExperiment() {
     experiment_blocks.push(subject_info_block);
     experiment_blocks.push(instructions_block);
-    experiment_blocks.push({chunk_type: 'linear', timeline: [training_block, training_debrief_block]});
+    if (pretraining == 0){
+      experiment_blocks.push({chunk_type: 'linear', timeline: [training_block, training_debrief_block]});
+    }
 
-    for (var i=0; i<num_blocks; ++i)
-    {
-      var test_chunk = [test_blocks[i]];
-      if (i == num_blocks-1)
+    for (var i=0; i<num_blocks; ++i){
+      if (pretraining == 1){
+        console.log('Block ' + String(i) + ': pretraining')
+        var test_chunk = [create_training_block(stimuli=test_blocks[i].stimuli)];
+        test_chunk.push(training_debrief_block);
+        test_chunk.push(test_blocks[i]);
+      }else{
+        var test_chunk = [test_blocks[i]];
+      }
+      if (i == num_blocks-1){
         test_chunk.push(overall_debrief_block);
-      else
+      }
+      else{
         test_chunk.push(block_debrief_block);
+      }
       experiment_blocks.push({chunk_type: 'linear', timeline: test_chunk});
     }
   }

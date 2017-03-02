@@ -10,4 +10,4 @@ video_path = '/media/data_clicktionary/rapid_categorization/'
 # Particular experiment to run. Determines subfolders.
 
 # Local folder to store experiment runs
-psiturk_run_path = '/home/sven2/psiturk/runs'
+psiturk_run_path = '/home/drew/Documents/psiturk/runs'
