@@ -149,7 +149,7 @@ def plot_results_by_revelation_and_max_answer_time(experiment_run='clicktionary'
         revs, scores = data_human_all.get_summary_by_revelation_and_max_answer_time(max_answer_time=max_answer_time)
         data_human = combine_revs_and_scores(revs, scores)
         do_plot(data_human, color, 'Human %dms' % max_answer_time)
-    plt.title('Accuracy by image revelation and max answer time\n' + config.get_experiment_desc(experiment_run))
+    plt.title('Accuracy by image revelation and max answer time (n=%d)\n' % data_human_all.n_subjects + config.get_experiment_desc(experiment_run))
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.pdf' % experiment_run))
