@@ -22,12 +22,14 @@ def get_cnn_results_by_revelation(set_index, off=0.0, include_true_labels=False)
         return np.vstack((
                 data['revalation_raw'] + off, data['correctness_raw'])).transpose()
 
+def combine_revs_and_scores(revs, scores, off=0.0):
+    return np.array([(100.0 - r + off, s) for r, score in zip(revs, scores) for s in score])
+
 def get_human_results_by_revaluation(experiment_run, filename_filter=None, off=0.0):
     data = Data()
     data.load(experiment_run=experiment_run)
     revs, scores = data.get_summary_by_revelation(filename_filter=filename_filter)
-    data = np.array([(100.0 - r + off, s) for r, score in zip(revs, scores) for s in score])
-    return data
+    return combine_revs_and_scores(revs, scores, off=off)
 
 def do_plot(data, clr, label):
     df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
@@ -131,13 +133,34 @@ def plot_results_by_revelation(experiment_run='clicktionary'):
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
 
+def plot_results_by_revelation_and_max_answer_time(experiment_run='clicktionary'):
+    # Get exp data
+    set_index, set_name = config.get_experiment_sets(experiment_run)
+    # Plot CNN results
+    data_cnn = get_cnn_results_by_revelation(set_index)
+    sns.set_style('white')
+    do_plot(data_cnn, 'black', 'CNN')
+    # Plot human results
+    data_human_all = Data()
+    data_human_all.load(experiment_run=experiment_run)
+    mats = sorted(data_human_all.max_answer_times)
+    colors = sns.cubehelix_palette(len(mats))
+    for max_answer_time, color in zip(mats, colors):
+        revs, scores = data_human_all.get_summary_by_revelation_and_max_answer_time(max_answer_time=max_answer_time)
+        data_human = combine_revs_and_scores(revs, scores)
+        do_plot(data_human, color, 'Human %dms' % max_answer_time)
+    plt.title('Accuracy by image revelation and max answer time\n' + config.get_experiment_desc(experiment_run))
+    plt.legend()
+    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run))
+    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.pdf' % experiment_run))
+
 
 if __name__ == '__main__':
-    for exp in ['clicktionary50msfull', 'clicktionary400msfull', 'clicktionary400ms150msfull']:
+    for exp in ['clicktionary400msvaranswerfull']:
         plt.figure()
-        plot_results_by_revelation(experiment_run=exp)
-        plt.figure()
-        plot_human_dprime(exp)
+        plot_results_by_revelation_and_max_answer_time(experiment_run=exp)
+        #plt.figure()
+        #plot_human_dprime(exp)
     #plot_results_by_revaluation_by_class(set_index=50, set_name='clicktionary')
     #plot_human_dprime(set_index=50)
     plt.show()

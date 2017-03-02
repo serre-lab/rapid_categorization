@@ -22,6 +22,7 @@ class Data:
         self.trials_by_img = {}  # trial data indexed by image
         self.data_by_img = {}  # result data averaged over trials by image
         self.acc_by_im = {}
+        self.acc_by_im_and_max_answer_time = {} # Dict indexed by image filename; contains dictionaries indexed by max answer time
         self.total_acc = []
         self.total_time = []
         self.min_rt_subj = {}
@@ -30,6 +31,7 @@ class Data:
         self.min_rt_subj['animal_wrong'] = {}
         self.min_rt_subj['nonanimal_wrong'] = {}
         self.im_by_subj= {}
+        self.max_answer_times = set()
         # Track failure rates
         # rt hists by max_rt
         self.hum_im_acc = []
@@ -148,6 +150,11 @@ class Data:
         for t in trials:
             self.n_trials += 1
             stim = json.loads(t["stimulus"])
+            if 'examples' in stim["stimulus"]: # Example video not used in evaluation
+                continue
+            max_answer_time = stim['duration'] - stim['onset']
+            t['max_answer_time'] = max_answer_time
+            self.max_answer_times.add(max_answer_time)
             # recover max_rt and im num in block
             max_rt = stim["duration"] - stim["onset"] - 50
             im_in_block = count % (len(trials) / 6)
@@ -184,12 +191,16 @@ class Data:
                 # Store per image data
                 if img not in self.acc_by_im.keys():
                     self.acc_by_im[img] = []
+                    self.acc_by_im_and_max_answer_time[img] = {}
                 self.acc_by_im[img].append(t['score'])
+                if max_answer_time not in self.acc_by_im_and_max_answer_time[img]:
+                    self.acc_by_im_and_max_answer_time[img][max_answer_time] = []
+                self.acc_by_im_and_max_answer_time[img][max_answer_time].append(t['score'])
             count += 1
 
     def get_summary_by_revelation(self, filename_filter=None):
         rev_scores = defaultdict(list)
-        for im, score in self.acc_by_im.iteritems():
+        for im, scores in self.acc_by_im.iteritems():
             rev, base_im = im.split('/')
             if rev ==  'full':
                 rev = -10
@@ -197,10 +208,26 @@ class Data:
             if filename_filter is not None:
                 if base_im_name not in filename_filter:
                     continue
-            rev_scores[int(rev)] += score
+            rev_scores[int(rev)] += scores
         revs = sorted(rev_scores.keys())
-        scores = [rev_scores[rev] for rev in revs]
-        return revs, scores
+        all_scores = [rev_scores[rev] for rev in revs]
+        return revs, all_scores
+
+    def get_summary_by_revelation_and_max_answer_time(self, max_answer_time, filename_filter=None):
+        rev_scores = defaultdict(list)
+        for im, scores_by_max_answer_time in self.acc_by_im_and_max_answer_time.iteritems():
+            scores = scores_by_max_answer_time.get(max_answer_time, [])
+            rev, base_im = im.split('/')
+            if rev ==  'full':
+                rev = -10
+            base_im_name = re.findall('[a-zA-Z_]*', base_im)[0]
+            if filename_filter is not None:
+                if base_im_name not in filename_filter:
+                    continue
+            rev_scores[int(rev)] += scores
+        revs = sorted(rev_scores.keys())
+        all_scores = [rev_scores[rev] for rev in revs]
+        return revs, all_scores
 
     def eval_participants(self):
         # store image names with index in dict to hold model comparisons

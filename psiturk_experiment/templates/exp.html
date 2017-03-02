@@ -141,7 +141,7 @@
     text: function() {
       var trials = jsPsych.data.getTrialsFromChunk(last_chunk_id);
       return "<p><h2>Example trials completed.</h2><p>You've done <strong>" + getPercentCorrect(trials) + "%</strong> correct trials.</p>" +
-        "<p>Presentation time of images in the main experiment, coming up next, is a lot shorter and you won't get feedback on whether or not you were correct. <strong>You should try to answer very fast!</strong> For the first block you will have <strong>"+max_answer_times[0]+"ms</strong> to respond. Good luck!</p>" +
+        "<p>Presentation time of images in the main experiment, coming up next, is a lot shorter and you won't get feedback on whether or not you were correct. <strong>You should try to answer very fast!</strong> For the first block you will have <strong>"+(presentation_duration + max_answer_times[0])+"ms</strong> to respond. Good luck!</p>" +
         "<p>Press any key to start the experiment!</p>";
     }
   };
