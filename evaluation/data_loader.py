@@ -9,7 +9,8 @@ from hmax.levels import util
 from results_key import label_results
 from scipy import stats
 from collections import defaultdict
-from rapid_categorization.clicktionary.config import get_experiment_sets, experiment_descs
+from rapid_categorization.clicktionary.config import experiment_descs
+from rapid_categorization.run_settings.settings import get_settings
 
 class Data:
     def __init__(self):
@@ -50,7 +51,8 @@ class Data:
         self.workerIds = []
 
     def load(self, experiment_run):
-        set_index, set_name = get_experiment_sets(experiment_run)
+        p = get_settings(experiment_run)
+        set_index, set_name = p['set_index'], p['set_name']
         self.load_ground_truth(set_index, set_name)
         self.load_participants(experiment_run)
 

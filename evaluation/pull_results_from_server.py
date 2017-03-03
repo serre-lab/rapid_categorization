@@ -16,4 +16,4 @@ def pull_results(experiment_run, force_overwrite=False):
 
 
 if __name__ == '__main__':
-    pull_results('clicklog400ms150msfull', force_overwrite=True)
+    pull_results('clicklog400ms500msfull', force_overwrite=True)

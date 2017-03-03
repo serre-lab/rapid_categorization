@@ -138,7 +138,7 @@ def correct_x_data(x, target_x):
 
 def plot_results_by_revelation(experiment_run='clicktionary'):
     p = get_settings(experiment_run)
-    set_index, set_name = config.get_experiment_sets(experiment_run)
+    set_index, set_name = p['set_index'], p['set_name']
     data_cnn = get_cnn_results_by_revelation(set_index)
     data_human = get_human_results_by_revaluation(experiment_run, off=0, is_inverted_rev=False)
     sns.set_style('white')
@@ -148,7 +148,7 @@ def plot_results_by_revelation(experiment_run='clicktionary'):
         data_human = correct_x_data(data_human, x_axis)
     do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'])
     do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'])
-    plt.title('Accuracy by image revelation\n' + config.get_experiment_desc(experiment_run))
+    plt.title('Accuracy by image revelation\n' + p['desc'])
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
@@ -177,7 +177,7 @@ def plot_results_by_revelation_and_max_answer_time(experiment_run='clicktionary'
 
 
 if __name__ == '__main__':
-    for exp in ['clicklog400ms150msfull']:
+    for exp in ['clicklog400ms500msfull']:
         plt.figure()
         plot_results_by_revelation(experiment_run=exp)
         #plt.figure()
