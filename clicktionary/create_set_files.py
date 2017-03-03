@@ -26,11 +26,11 @@ def load_imagelist(set_index, set_name, exclusion_files=None):
     print '%d images loaded from set %d.' % (len(class_images), set_index)
     return class_images
 
-def create_set_files(n_sets, input_set_index, input_set_name, output_set_index, output_set_name, exclusion_files=None, include_full=False):
+def create_set_files(n_sets, input_set_index, input_set_name, output_set_index, output_set_name, exclusion_files=None, include_full=False, set_range=100):
     class_images = load_imagelist(set_index=input_set_index, set_name=input_set_name, exclusion_files=exclusion_files)
     all_classes = np.unique(class_images.values())
     n_images = len(class_images)
-    revalations = [str(r) for r in xrange(0, 100, 10)]
+    revalations = [str(r) for r in xrange(0, set_range, 10)]
     if include_full: revalations += ['full']
     n_revalations = len(revalations)
     image_to_index = {}
@@ -42,6 +42,7 @@ def create_set_files(n_sets, input_set_index, input_set_name, output_set_index, 
             idx += 1
     for i_set in xrange(n_sets):
         set_fn = get_imageset_filename(set_index = output_set_index + i_set, set_name = output_set_name)
+        print 'Writing %s' % set_fn
         with open(set_fn, 'wt') as fid:
             image_list = np.random.permutation([k for k in class_images.keys()])
             for image in image_list:
@@ -53,4 +54,5 @@ if __name__ == '__main__':
     exp3 = '/media/data_cifs/clicktionary/causal_experiment/classes_exp_3.txt'
     #create_set_files(20, 50, 'clicktionary', 2000, 'clicktionary', exclusion_files=[exp3])
     #create_set_files(20, 50, 'clicktionary', 3000, 'clicktionary', exclusion_files=[exp2, exp3])
-    create_set_files(22, 50, 'clicktionary', 4000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3])
+    #create_set_files(22, 50, 'clicktionary', 4000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3])
+    create_set_files(24, 80, 'clicktionary', 5000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3], set_range=110)

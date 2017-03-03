@@ -16,6 +16,10 @@ def load_classes():
 
 def collect_images(subpath, set_index):
     out_fn = os.path.join(imageset_base_path, 'raw_images_%d.txt' % set_index)
+    if os.path.isfile(out_fn):
+        print 'Output file exists. skipping.'
+        print out_fn
+        return
     class_map = load_classes()
     with open(out_fn, 'wt') as fid:
         for root, dirs, files in os.walk(os.path.join(imageset_base_path, subpath)):
@@ -30,6 +34,7 @@ def collect_images(subpath, set_index):
                 full_fn = os.path.join(root, file)
                 print class_index, full_fn
                 fid.write('%s\t%d\n' % (full_fn, class_index))
+    print 'File list written to %s' % out_fn
 
 if __name__ == '__main__':
-    print collect_images(subpath='clicktionary_masked_images_balanced_cut', set_index=70)
+    print collect_images(subpath='clicktionary_log_scale_masked_images', set_index=80)
