@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # Per-run settings of the experiments
 
+import sys
+
+def get_settings(name):
+    # Return settings by name
+    p = {}
+    getattr(sys.modules[__name__], name)(p)
+    return p
+
 def base_settings(p):
     p['config'] = {}
     p['config']['HIT Configuration'] = {}
@@ -32,6 +40,8 @@ def base_settings(p):
     p['identifiers']['Class1'] = 'Animal'
     p['identifiers']['class2'] = 'non-animal'
     p['identifiers']['Class2'] = 'Non-animal'
+    p['set_index'] = 70
+    p['set_name'] = 'clicktionary'
 
 
 def clicktionary(p):
@@ -42,6 +52,7 @@ def clicktionary(p):
     p['set_indices'] = range(2000, 2020)
     p['config']['HIT Configuration']['title'] = 'Animal Realization'
     p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
+    p['set_index'] = 50
 
 def clicktionary50ms(p):
     base_settings(p)
@@ -155,3 +166,4 @@ def clicklog400ms150msfull(p):
     p['exp']['num_blocks'] = 5
     p['exp']['max_answer_times'] = [150] * p['exp']['num_blocks']
     p['exp']['pretraining'] = 0
+    p['set_index'] = 80

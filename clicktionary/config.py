@@ -11,7 +11,8 @@ experiment_descs = {
     'clicktionary50msfull': 'Set 1, Animal vs Vehicle, 50ms stim + 500ms answer',
     'clicktionary400msfull': 'Set 1, Animal vs Vehicle, 400ms stim + 500ms answer',
     'clicktionary400ms150msfull': 'Set 1, Animal vs Vehicle, 400ms stim + 150ms answer',
-    'clicktionary400msvaranswerfull': 'Set 1, Animal vs Vehicle, 400ms stim + [100-500] ms answer'
+    'clicktionary400msvaranswerfull': 'Set 1, Animal vs Vehicle, 400ms stim + [100-500] ms answer',
+    'clicklog400ms150msfull': 'Set 1 log scale, Animal vs Vehicle, 400ms stim + 150ms answer',
 }
 
 def get_experiment_sets(name):
@@ -21,6 +22,7 @@ def get_experiment_sets(name):
     if name == 'clicktionary400msfull': return 70, 'clicktionary'
     if name == 'clicktionary400ms150msfull': return 70, 'clicktionary'
     if name == 'clicktionary400msvaranswerfull': return 70, 'clicktionary'
+    if name == 'clicklog400ms150msfull': return 80, 'clicktionary'
 
 def get_experiment_desc(name):
     return experiment_descs[name]
