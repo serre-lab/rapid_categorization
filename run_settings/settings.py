@@ -43,6 +43,7 @@ def base_settings(p):
     p['set_index'] = 70
     p['set_name'] = 'clicktionary'
     p['log_scale_revelations'] = False
+    p['invert_revelations'] = True
 
 
 def clicktionary(p):
@@ -169,3 +170,9 @@ def clicklog400ms150msfull(p):
     p['exp']['pretraining'] = 0
     p['set_index'] = 80
     p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+
+def clicklog400ms500msfull(p):
+    clicklog400ms150msfull(p)
+    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']

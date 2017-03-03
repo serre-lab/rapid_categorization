@@ -111,5 +111,5 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('clicklog400ms150msfull', force_overwrite=True, deploy=True)
+    generate_experiment('clicklog400ms500msfull', force_overwrite=True, deploy=True)
     sync_stimuli()
