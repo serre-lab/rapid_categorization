@@ -42,6 +42,7 @@ def base_settings(p):
     p['identifiers']['Class2'] = 'Non-animal'
     p['set_index'] = 70
     p['set_name'] = 'clicktionary'
+    p['log_scale_revelations'] = False
 
 
 def clicktionary(p):
@@ -167,3 +168,4 @@ def clicklog400ms150msfull(p):
     p['exp']['max_answer_times'] = [150] * p['exp']['num_blocks']
     p['exp']['pretraining'] = 0
     p['set_index'] = 80
+    p['log_scale_revelations'] = True

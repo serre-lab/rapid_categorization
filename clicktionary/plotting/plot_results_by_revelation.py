@@ -35,14 +35,18 @@ def get_human_results_by_revaluation(experiment_run, filename_filter=None, off=0
     revs, scores = data.get_summary_by_revelation(filename_filter=filename_filter)
     return combine_revs_and_scores(revs, scores, off=off, is_inverted_rev=is_inverted_rev)
 
-def do_plot(data, clr, label):
+def do_plot(data, clr, label, log_scale=False):
     df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
     df = df[df['Revelation'] > 0]
     estimator = np.mean
     ax = sns.regplot(
-        data=df, x='Revelation', y='correctness', ci=95, n_boot=10,
-        x_estimator=estimator, color=clr, truncate=True, fit_reg=True, order=3, label=label) # , logistic=False
-    ax.set_xticks(np.linspace(0, 100, 11))
+        data=df, x='Revelation', y='correctness', ci=95, n_boot=200,
+        x_estimator=estimator, color=clr, truncate=True, fit_reg=True, order=4, label=label) # , logistic=False
+    if log_scale:
+        ax.set_xticks(np.hstack((np.linspace(1, 100, 11), 110)))
+        ax.set_xticklabels([str(x) for x in np.around(np.logspace(0, 2, 11), 2)] + ['Full'])
+    else:
+        ax.set_xticks(np.linspace(0, 100, 11))
 
 def do_plot_dprime(data, clr, label):
     revs = data[:,0]
@@ -125,13 +129,25 @@ def plot_human_dprime(experiment_run):
     plt.savefig(os.path.join(config.plot_path, 'dprime_by_revelation_%s.pdf' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'dprime_by_revelation_%s.png' % experiment_run))
 
+def correct_x_data(x, target_x):
+    human_x = np.unique(x[:, 0])
+    out_x = np.copy(x)
+    for it_human, it_cnn in zip(human_x, target_x):
+        out_x[x[:, 0] == it_human, 0] = it_cnn
+    return out_x
+
 def plot_results_by_revelation(experiment_run='clicktionary'):
+    p = get_settings(experiment_run)
     set_index, set_name = config.get_experiment_sets(experiment_run)
     data_cnn = get_cnn_results_by_revelation(set_index)
-    data_human = get_human_results_by_revaluation(experiment_run, off=1, is_inverted_rev=False)
+    data_human = get_human_results_by_revaluation(experiment_run, off=0, is_inverted_rev=False)
     sns.set_style('white')
-    do_plot(data_cnn, 'black', 'CNN')
-    do_plot(data_human, 'red', 'Human')
+    if p['log_scale_revelations']:
+        x_axis = np.hstack((np.linspace(0, 100, 11), 110))
+        data_cnn = correct_x_data(data_cnn, x_axis)
+        data_human = correct_x_data(data_human, x_axis)
+    do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'])
+    do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'])
     plt.title('Accuracy by image revelation\n' + config.get_experiment_desc(experiment_run))
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
