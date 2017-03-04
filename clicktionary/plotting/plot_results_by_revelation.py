@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Plot the image scores by revalation
-
+import re
 import os
 from rapid_categorization.evaluation.data_loader import Data
 import numpy as np
@@ -23,30 +23,60 @@ def get_cnn_results_by_revelation(set_index, off=0.0, include_true_labels=False)
         return np.vstack((
                 data['revelation_raw'] + off, data['correctness_raw'])).transpose()
 
-def combine_revs_and_scores(revs, scores, off=0.0, is_inverted_rev=True):
+def combine_revs_and_scores(revs, scores, off=0.0, is_inverted_rev=True, is_log_scale=False, full_val=200):
     if is_inverted_rev:
-        return np.array([(100.0 - r + off, s) for r, score in zip(revs, scores) for s in score])
+        data = np.array([(100.0 - r + off, s) for r, score in zip(revs, scores) for s in score])
     else:
-        return np.array([(r + off, s) for r, score in zip(revs, scores) for s in score])
+        data = np.array([(r + off, s) for r, score in zip(revs, scores) for s in score])
+    if is_log_scale:
+        unique_bins = np.unique(data[:, 0])
+        full_image = np.argmin(data[:,0])
+        max_realization = np.max(data[:,0])
+        log_bins = np.logspace(0, np.log10(max_realization), np.sum(unique_bins != full_image))
+        remap_index = np.vstack((unique_bins, np.hstack((full_val, log_bins))))
+        data = rescale_x(data, remap_index)
+    return data
 
-def get_human_results_by_revaluation(experiment_run, filename_filter=None, off=0.0, is_inverted_rev=True):
+def rescale_x(x, target_x):
+    out_x = np.copy(x)
+    for idx in range(target_x.shape[1]):
+        out_x[x[:, 0] == target_x[0,idx], 0] = target_x[1,idx]
+    return out_x
+
+def get_human_results_by_revaluation(experiment_run, filename_filter=None, off=0.0, is_inverted_rev=True, log_scale=False):
     data = Data()
     data.load(experiment_run=experiment_run)
     revs, scores = data.get_summary_by_revelation(filename_filter=filename_filter)
-    return combine_revs_and_scores(revs, scores, off=off, is_inverted_rev=is_inverted_rev)
+    return combine_revs_and_scores(revs, scores, off=off, is_inverted_rev=is_inverted_rev, is_log_scale=log_scale)
 
-def do_plot(data, clr, label, log_scale=False):
+def do_plot(data, clr, label, log_scale=False, estimator=np.mean, full_size=200, max_val=None):
     df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
-    df = df[df['Revelation'] > 0]
-    estimator = np.mean
+    full_size_df = df[df['Revelation'] == full_size]
+    if max_val is not None:
+        full_size_df.loc[:, 'Revelation'] = max_val
+    else:
+        max_val = full_size
+    df = df[df['Revelation'] < full_size]
+    # df = df[df['Revelation'] > 0]
     ax = sns.regplot(
         data=df, x='Revelation', y='correctness', ci=95, n_boot=200,
-        x_estimator=estimator, color=clr, truncate=True, fit_reg=True, order=4, label=label) # , logistic=False
+        x_estimator=estimator, color=clr, truncate=True, fit_reg=True,
+        order=3, label=label) # , logistic=False
+    ax = sns.regplot(
+        data=full_size_df, x='Revelation', y='correctness', ci=95, n_boot=200,
+        x_estimator=estimator, color=clr, truncate=True)
     if log_scale:
-        ax.set_xticks(np.hstack((np.linspace(1, 100, 11), 110)))
-        ax.set_xticklabels([str(x) for x in np.around(np.logspace(0, 2, 11), 2)] + ['Full'])
+        ax.set_xscale('log')
+        ax.set_xlim(0.2, max_val + 2000)
+        ax.set_xticks(np.hstack((np.around(np.logspace(0, 2, 11), 2), max_val)))
+        ax.set_xticklabels([str(x) for x in np.around(np.logspace(0, 2, 11), 2)] + ['Full'], rotation=60)
+        ax.set_xlabel('Log-spaced image realization')
     else:
         ax.set_xticks(np.linspace(0, 100, 11))
+    ax.set_yticklabels(np.linspace(40, 100, 7).astype(int)) 
+    ax.set_ylabel('Categorization accuracy (%)')
+    plt.tight_layout()
+
 
 def do_plot_dprime(data, clr, label):
     revs = data[:,0]
@@ -129,29 +159,35 @@ def plot_human_dprime(experiment_run):
     plt.savefig(os.path.join(config.plot_path, 'dprime_by_revelation_%s.pdf' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'dprime_by_revelation_%s.png' % experiment_run))
 
-def correct_x_data(x, target_x):
-    human_x = np.unique(x[:, 0])
-    out_x = np.copy(x)
-    for it_human, it_cnn in zip(human_x, target_x):
-        out_x[x[:, 0] == it_human, 0] = it_cnn
-    return out_x
-
 def plot_results_by_revelation(experiment_run='clicktionary'):
-    p = get_settings(experiment_run)
-    set_index, set_name = p['set_index'], p['set_name']
-    data_cnn = get_cnn_results_by_revelation(set_index)
-    data_human = get_human_results_by_revaluation(experiment_run, off=0, is_inverted_rev=False)
     sns.set_style('white')
-    if p['log_scale_revelations']:
-        x_axis = np.hstack((np.linspace(0, 100, 11), 110))
-        data_cnn = correct_x_data(data_cnn, x_axis)
-        data_human = correct_x_data(data_human, x_axis)
-    do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'])
-    do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'])
-    plt.title('Accuracy by image revelation\n' + p['desc'])
+    if len(experiment_run) > 1:
+        # colors = sns.color_palette('Set1', len(experiment_run))
+        colors = sns.color_palette(["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"][:len(experiment_run)])
+        for exp, color in zip(experiment_run, colors):
+            p = get_settings(exp)
+            set_index, set_name = p['set_index'], p['set_name']
+            data_human = get_human_results_by_revaluation(exp, off=0, is_inverted_rev=False, log_scale=p['log_scale_revelations'])
+            exp_params = [x for x in re.split('[A-Za-z]+',exp) if len(x) > 0]
+            title = 'Human image time: %s | response time: %s' % (exp_params[0], exp_params[1])
+            do_plot(data_human, color, title, log_scale=p['log_scale_revelations'], max_val=200)
+        plt.title('Accuracy by log-spaced image feature revelation\n')
+        experiment_run = '_'.join(experiment_run)
+    else:
+        p = get_settings(experiment_run)
+        set_index, set_name = p['set_index'], p['set_name']
+        data_human = get_human_results_by_revaluation(experiment_run, off=0, is_inverted_rev=False, log_scale=p['log_scale_revelations'])
+        plt.title('Accuracy by image revelation\n' + p['desc'])
+        do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'], max_val=200)
+
+    # CNN is always the same
+    data_cnn = get_cnn_results_by_revelation(set_index)
+    do_plot(data_cnn, 'red', 'CNN', log_scale=p['log_scale_revelations'], max_val=200)
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
+    print 'Saved to: %s' % os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
+
 
 def plot_results_by_revelation_and_max_answer_time(experiment_run='clicktionary'):
     # Get exp data
@@ -174,10 +210,12 @@ def plot_results_by_revelation_and_max_answer_time(experiment_run='clicktionary'
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.pdf' % experiment_run))
-
+    print 'Saved to: %s' % os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
 
 if __name__ == '__main__':
-    for exp in ['clicklog400ms500msfull']:
+    # chosen_exp = ['clicklog400ms500msfull']
+    chosen_exp = [['clicklog400ms500msfull', 'clicklog400ms150msfull']]
+    for exp in chosen_exp:
         plt.figure()
         plot_results_by_revelation(experiment_run=exp)
         #plt.figure()
