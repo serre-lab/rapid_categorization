@@ -2,7 +2,7 @@
 # Create the set definition files to be loaded by the psiturk experiment
 
 import os, re
-from hmax.levels.util import get_imageset_filename_raw, get_imageset_filename
+from rapid_categorization.levels.util import get_imageset_filename_raw, get_imageset_filename
 import numpy as np
 
 def load_imagelist(set_index, set_name, exclusion_files=None):

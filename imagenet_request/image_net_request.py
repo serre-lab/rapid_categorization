@@ -8,6 +8,7 @@ import requests
 from PIL import Image
 import numpy as np
 import math
+from multiprocessing import Pool
 
 class ImageNet:
     """
@@ -228,8 +229,9 @@ class ImageNet:
                 image_request = \
                     requests.get(image_url, stream=True, verify=False, timeout=(1, 10))
 
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout,
-                    requests.exceptions.TooManyRedirects) as e:
+            # except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout,
+            #         requests.exceptions.TooManyRedirects) as e:
+            except:
                 # print "Unable to download image at", image_url, "for reason:", e
                 missed_images.append(image_number)
                 continue
@@ -437,6 +439,11 @@ class ImageNet:
         serialized_wnid_url_map_path.close()
 
         print "Pickling complete."
+
+
+    # TODO: Create a function that can read all the images, make a list of what is
+        # downloaded, and then exclude the already downloaded ones from being redownloaded
+    # TODO: Parallelize the code
 
 
 

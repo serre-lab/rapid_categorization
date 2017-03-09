@@ -4,7 +4,7 @@
 
 import os, shutil
 from rapid_categorization.run_settings import settings
-from hmax.levels.util import get_imageset_filename
+from rapid_categorization.levels.util import get_imageset_filename
 from rapid_categorization.config import psiturk_run_path
 import subprocess
 from ConfigParser import SafeConfigParser

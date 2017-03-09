@@ -2,7 +2,7 @@
 # Convert a raw imageset file (containing full paths) to the reduced set (containing only revalation and filename without extension)
 
 import os
-from hmax.levels.util import get_imageset_filename, get_imageset_filename_raw
+from rapid_categorization.levels.util import get_imageset_filename, get_imageset_filename_raw
 
 def filename_to_fileid(fn):
     return os.path.splitext('/'.join(fn.split('/')[-2:]))[0]
