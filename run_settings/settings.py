@@ -177,3 +177,9 @@ def clicklog400ms500msfull(p):
     # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
     p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
     p['desc'] = 'Set 1 log scale, Animal vs Vehicle, 400ms stim + 500ms answer'
+
+def clickloglrp400ms500msfull(p):
+    clicklog400ms150msfull(p)
+    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
+    p['desc'] = 'Set 1 log scale, Animal vs Vehicle, 400ms stim + 500ms answer'

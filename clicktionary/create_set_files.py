@@ -55,4 +55,6 @@ if __name__ == '__main__':
     #create_set_files(20, 50, 'clicktionary', 2000, 'clicktionary', exclusion_files=[exp3])
     #create_set_files(20, 50, 'clicktionary', 3000, 'clicktionary', exclusion_files=[exp2, exp3])
     #create_set_files(22, 50, 'clicktionary', 4000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3])
-    create_set_files(24, 80, 'clicktionary', 5000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3], set_range=110)
+    #create_set_files(24, 80, 'clicktionary', 5000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3], set_range=110)
+    create_set_files(24, 90, 'clicktionary', 6000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3],
+                     set_range=110)

@@ -54,7 +54,7 @@ if __name__ == '__main__':
     feature_name = 'fc7ex'
     classifier_type = 'svm'
     train_batches = [0, 15]
-    set_index = 80
+    set_index = 90
     set_name = 'clicktionary'
     logscale_rev = True
     revs, perfs, revelation, correctness, true_labels = get_performances(model_name, feature_name, classifier_type, train_batches, set_index, set_name, invert_rev=False, logscale_rev=logscale_rev)
