@@ -6,14 +6,14 @@ import sys
 import os
 import pickle
 import numpy as np
-import rapid_categorization.levels.util
+import rapid_categorization.model.util
 from sklearn.decomposition import PCA
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         feature_name = 'hmax_c2'
 
-    base_path = hmax.levels.util.get_base_path()
+    base_path = rapid_categorization.model.util.get_base_path()
     train_batches = range(0, 10)
     apply_batches = range(0, 200)
     set_name = 'setb50k'

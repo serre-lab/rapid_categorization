@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from rapid_categorization.levels import util
+from rapid_categorization.model import util
 import numpy as np
 import matplotlib.pyplot as plt
 import decimal

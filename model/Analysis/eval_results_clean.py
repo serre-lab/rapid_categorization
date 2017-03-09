@@ -8,7 +8,7 @@ Created on Sun May  8 19:14:15 2016
 import numpy as np
 import pickle
 from scipy import stats
-from rapid_categorization.levels import util
+from rapid_categorization.model import util
 import data_loader
 import plot_correlation_overview
 import plot_correlations

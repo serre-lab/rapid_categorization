@@ -4,7 +4,7 @@
 
 import os
 import pickle
-import rapid_categorization.levels.util
+import rapid_categorization.model.util
 import numpy as np
 
 pred_pth = '/media/clpsshare/sven2/ccv/AnNonAn_cc256/predictions'
@@ -15,7 +15,7 @@ label_source_file = 'setb50k'
 # Collect predictions
 source_info = dict()
 for i in xrange(batch_num):
-    true_labels, source_filenames = rapid_categorization.levels.util.load_labels(label_source_file, i)
+    true_labels, source_filenames = rapid_categorization.model.util.load_labels(label_source_file, i)
     if i == 0:
         source_info['true_labels'] = true_labels
         source_info['source_filenames'] = source_filenames

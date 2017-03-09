@@ -3,11 +3,11 @@ import lmdb
 import numpy as np
 import caffe
 import os
-import rapid_categorization.levels.util
+import rapid_categorization.model.util
 
 def ext_caffe_part(lmdb_fn, out_fn, set_name, i_set):
     # Load set
-    lbl, src_fns = rapid_categorization.levels.util.load_labels(set_name, i_set)
+    lbl, src_fns = rapid_categorization.model.util.load_labels(set_name, i_set)
     n_samples = lbl.size
     out_data = None
     print '%d samples in %s.' % (n_samples, lmdb_fn)

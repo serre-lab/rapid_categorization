@@ -5,7 +5,7 @@ import re
 import sqlite3
 import json
 import numpy as np
-from hmax.levels import util
+from rapid_categorization.model import util
 from results_key import label_results
 from scipy import stats
 from collections import defaultdict

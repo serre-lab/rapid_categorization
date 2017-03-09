@@ -6,7 +6,7 @@ import sys
 import os
 import pickle
 import numpy as np
-import rapid_categorization.levels.util
+import rapid_categorization.model.util
 from sklearn.decomposition import PCA
 
 if __name__ == "__main__":
@@ -19,8 +19,8 @@ if __name__ == "__main__":
     else:
         train_batch_count = int(sys.argv[2])
 
-    base_path = rapid_categorization.levels.util.get_base_path()
-    categories = rapid_categorization.levels.util.get_categories()
+    base_path = rapid_categorization.model.util.get_base_path()
+    categories = rapid_categorization.model.util.get_categories()
     train_batches = range(0, train_batch_count)
     set_name = 'setb50k'
     n_components = 2048

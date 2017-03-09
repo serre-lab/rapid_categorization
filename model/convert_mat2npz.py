@@ -7,7 +7,7 @@ import sys
 import os
 import scipy.io as sio
 import numpy as np
-import rapid_categorization.levels.util
+import rapid_categorization.model.util
 
 if len(sys.argv) < 2:
     print 'No filenames provided.'

@@ -2,7 +2,7 @@
 # Copy categorization DB from g15 to CIFS
 
 import os, subprocess
-from hmax.levels import util
+from rapid_categorization.model import util
 from rapid_categorization import config
 
 def pull_results(experiment_run, force_overwrite=False):

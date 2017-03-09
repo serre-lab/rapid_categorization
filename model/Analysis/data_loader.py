@@ -4,7 +4,7 @@
 import sqlite3
 import json
 import numpy as np
-from rapid_categorization.levels import util
+from rapid_categorization.model import util
 from results_key import label_results
 #from statsmodels.stats.multicomp import pairwise_tukeyhsd
 #from statsmodels.stats.multicomp import MultiComparison
