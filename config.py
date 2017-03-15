@@ -16,6 +16,6 @@ hostname = platform.node()
 if hostname == 'x8':
     psiturk_run_path = '/home/sven2/psiturk/runs'
 elif hostname == 'g17':
-    psiturk_run_path = '/home/michele/psiturk/runs'
+    psiturk_run_path = '/home/charlie/psiturk/runs'
 else:
     psiturk_run_path = '/home/drew/Documents/psiturk/runs'
