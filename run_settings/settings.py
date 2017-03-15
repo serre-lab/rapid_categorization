@@ -183,3 +183,14 @@ def clickloglrp400ms500msfull(p):
     # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
     p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
     p['desc'] = 'Set 1 log scale, Animal vs Vehicle, 400ms stim + 500ms answer'
+
+def charlie_test(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_100'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
+    p['set_name'] = 'clicktionary'
+    p['set_indices'] = range(2000, 2020)
+    p['config']['HIT Configuration']['title'] = 'Animal Realization'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
+    p['set_index'] = 50
+    p['exclude_participants'] = ['clicklog400ms500msfull', 'clickloglrp400ms500msfull']
