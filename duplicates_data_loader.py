@@ -361,7 +361,9 @@ class Data:
             print 'Class %s RT: %.1fms (animal=%.1fms, nonanimal=%.1fms)' % (class_name, np.mean(rts['animal'] + rts['nonanimal']), np.mean(rts['animal']),np.mean(rts['nonanimal']))
 
 
-def copy_participant_db(path, template_file, participants=None, suffix='init_duplicate_participants', verbose=True):
+def copy_participant_db(
+        path, template_file, repeat_participants=None,
+        suffix='init_duplicate_participants', verbose=True):
     new_name = os.path.join(path, re.split(
         '\.', str(datetime.now()))[0].\
         replace(' ', '_').replace(':', '_').replace('-', '_') + '_' + \
@@ -370,11 +372,12 @@ def copy_participant_db(path, template_file, participants=None, suffix='init_dup
     try:
         shutil.copy2(old_name,  new_name)
         r = sqlite3.connect(new_name, timeout=10)
-        r.close()
-        r = sqlite3.connect(new_name, timeout=10)
         c = r.cursor()
-        c.execute("DELETE FROM placecat")
-        [c.execute("INSERT INTO placecat (workerid, uniqueid, assignmentid, hitid) VALUES ('%s',%s,'%s','%s')" % (par, idx, idx, idx)) for idx, par in enumerate(participants)]
+        c.execute("DELETE FROM placecat")  # Delete all rows... participant data
+        [c.execute(
+            "INSERT INTO placecat (workerid, uniqueid, assignmentid, hitid) VALUES ('%s',%s,'%s','%s')" %
+            (par, idx, idx, idx))
+            for idx, par in enumerate(repeat_participants)] # Insert repeat participants
         r.commit()
         r.close()
         if verbose: print "Created %s to block your repeat participants." % new_name
@@ -403,5 +406,5 @@ if __name__ == '__main__':
         print 'Found repeat workers: %s' % dup_workers
     else:
         print 'No repeat workers!'
-    copy_participant_db(experiment_path, 'template.db', participants=data.workerIds)
-
+    copy_participant_db(
+        experiment_path, 'template.db', repeat_participants=dup_workers)
