@@ -346,7 +346,7 @@ class Data:
 
     def eval_by_classes(self, class_idcs, class_names):
         self.model_comp_by_class = {}
-        for class_idx,class_name in zip(class_idcs, class_names):
+        for class_idx, class_name in zip(class_idcs, class_names):
             imageset_filename = util.get_imageset_filename(class_idx, 'set')
             class_images = label_results(imageset_filename)
             comp = {'animal': [], 'nonanimal': []}
@@ -370,18 +370,27 @@ def copy_participant_db(
         suffix + '_' + template_file)
     old_name = os.path.join(path, template_file)
     try:
-        shutil.copy2(old_name,  new_name)
-        r = sqlite3.connect(new_name, timeout=10)
-        c = r.cursor()
-        c.execute("DELETE FROM placecat")  # Delete all rows... participant data
-        [c.execute(
+        # Copy to new db
+        new_db = sqlite3.connect(':memory:')  # create a memory database
+        old_db = sqlite3.connect(old_name)
+        query = "".join(line for line in old_db.iterdump())
+        new_db.executescript(query)
+        cur = new_db.cursor()
+        cur.execute("DELETE FROM placecat")  # Delete all participant data
+        # Insert repeat participants
+        [cur.execute(
             "INSERT INTO placecat (workerid, uniqueid, assignmentid, hitid) VALUES ('%s',%s,'%s','%s')" %
             (par, idx, idx, idx))
-            for idx, par in enumerate(repeat_participants)] # Insert repeat participants
-        r.commit()
-        r.close()
+            for idx, par in enumerate(repeat_participants)]
+        new_db.commit()
+        # Save to file
+        with open(new_name, 'w') as f:
+            for line in new_db.iterdump():
+                f.write('%s\n' % line)
         if verbose: print "Created %s to block your repeat participants." % new_name
-        return r
+        new_db.close()
+
+        return new_name
     except Exception as inst:
         os.remove(new_name)
         print(type(inst))
