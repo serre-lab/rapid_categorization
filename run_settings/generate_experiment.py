@@ -9,6 +9,7 @@ from rapid_categorization.config import psiturk_run_path
 import subprocess
 from ConfigParser import SafeConfigParser
 from rapid_categorization.prepare_stimuli import generate_stimulus_videos
+from rapid_categorization.evaluation import duplicates_data_loader
 
 def apply_dict_to_template(src_filename, dst_filename, settings):
     # Replace placeholders in src filename and save to dst filename
@@ -103,6 +104,11 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
     dict_to_js(p['exp'], os.path.join(run_path, 'static', 'config.js'))
     # Generate main psiturk config file
     write_values_to_config(p['config'], os.path.join(run_path, 'config.txt'))
+    # Create database with duplicate participants blocked (if requested)
+    duplicates_data_loader.main(
+        experiment_descs=p['exclude_participants'],
+        output_name=p['db_name'])
+
     # deploy to server
     if deploy:
         subprocess.call(['rsync', '-avz', '--', run_path, 'turk:~/experiments/'])

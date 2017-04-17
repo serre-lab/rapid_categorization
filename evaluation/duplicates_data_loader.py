@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # Load experimental and model data
 import os
-import shutil
 import re
 import sqlite3
 import json
@@ -10,11 +9,8 @@ from hmax.levels import util
 from results_key import label_results
 from scipy import stats
 from collections import defaultdict
-from rapid_categorization.clicktionary.config import experiment_descs
-from rapid_categorization.clicktionary.config import get_experiment_sets,\
-    experiment_descs
 from datetime import datetime
-from hmax.levels.util import experiment_path
+from rapid_categorization.model.util import experiment_path
 
 
 class Data:
@@ -364,10 +360,14 @@ class Data:
 def copy_participant_db(
         path, template_file, repeat_participants=None,
         suffix='init_duplicate_participants', verbose=True):
-    new_name = os.path.join(path, re.split(
-        '\.', str(datetime.now()))[0].\
-        replace(' ', '_').replace(':', '_').replace('-', '_') + '_' + \
-        suffix + '_' + template_file)
+    if template_file is not None:
+        new_name = os.path.join(path, template_file)
+    else:
+        new_name = os.path.join(path, re.split(
+            '\.', str(datetime.now()))[0].\
+            replace(' ', '_').replace(
+                ':', '_').replace('-', '_') + '_' + \
+                suffix + '_' + template_file)
     old_name = os.path.join(path, template_file)
     try:
         # Copy to new db
@@ -389,25 +389,26 @@ def copy_participant_db(
                 f.write('%s\n' % line)
         if verbose: print "Created %s to block your repeat participants." % new_name
         new_db.close()
-
         return new_name
     except Exception as inst:
         os.remove(new_name)
         print(type(inst))
         print(inst.args)
 
-if __name__ == '__main__':
-    """Test: Check for duplicate subs."""
+def main(experiment_descs=None, output_name=None):
+    """Test: Check for duplicate subs.
+    experiment_descs is a list of experiment descriptions to block."""
     data = Data()
     # data.load_ground_truth(set_index=50, set_name='clicktionary')
     # revs, scores = data.get_summary_by_revalation()
     # print revs
     # print scores
-    for exp_name in experiment_descs.keys():
+    for exp_name in experiment_descs:
         if re.search('\d+', exp_name) is not None:
             # Ignore the original clicktionary exp in the config
             print exp_name
             data.get_participant_ids(experiment_run=exp_name)
+
     s = set()
     dup_workers = list(set(x for x in data.workerIds if x in s or s.add(x)))
 

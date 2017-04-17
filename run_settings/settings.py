@@ -44,7 +44,7 @@ def base_settings(p):
     p['set_name'] = 'clicktionary'
     p['log_scale_revelations'] = False
     p['invert_revelations'] = True
-
+    p['exclude_participants'] = []
 
 def clicktionary(p):
     base_settings(p)
@@ -193,4 +193,11 @@ def charlie_test(p):
     p['config']['HIT Configuration']['title'] = 'Animal Realization'
     p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
     p['set_index'] = 50
-    p['exclude_participants'] = ['clicklog400ms500msfull', 'clickloglrp400ms500msfull']
+    p['db_name'] = 'charlie_db.db'
+    p['exclude_participants'] = [
+        'clicktionary',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'clicktionary400msfull',
+        'clicktionary400ms150msfull',
+        'clicktionary400msvaranswerfull']
