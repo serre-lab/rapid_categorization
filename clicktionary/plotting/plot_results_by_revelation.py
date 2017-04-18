@@ -161,7 +161,7 @@ def plot_human_dprime(experiment_run):
 
 def plot_results_by_revelation(experiment_run='clicktionary'):
     sns.set_style('white')
-    if len(experiment_run) > 1:
+    if isinstance(experiment_run, list):
         # colors = sns.color_palette('Set1', len(experiment_run))
         colors = sns.color_palette(["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"][:len(experiment_run)])
         for exp, color in zip(experiment_run, colors):
@@ -182,7 +182,7 @@ def plot_results_by_revelation(experiment_run='clicktionary'):
 
     # CNN is always the same
     data_cnn = get_cnn_results_by_revelation(set_index)
-    do_plot(data_cnn, 'red', 'CNN', log_scale=p['log_scale_revelations'], max_val=200)
+    do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'], max_val=200)
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
@@ -233,5 +233,6 @@ if __name__ == '__main__':
         #plot_human_dprime(exp)
     #plot_results_by_revaluation_by_class(set_index=50, set_name='clicktionary')
     #plot_human_dprime(set_index=50)
-    plot_cnn_comparison([110, 100])
+    #plot_cnn_comparison([110, 100])
+    plot_results_by_revelation('click_probfill')
     plt.show()

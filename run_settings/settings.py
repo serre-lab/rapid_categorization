@@ -225,6 +225,7 @@ def click_probfill(p):
     p['exp']['pretraining'] = 0
     p['log_scale_revelations'] = True
     p['invert_revelations'] = False
+    p['desc'] = '400ms stim + 500ms answer, probabilistic revelation'
     p['exclude_participants'] = [
         'clicklog400ms150msfull',
         'clicklog400ms500msfull',
