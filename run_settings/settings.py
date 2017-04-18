@@ -174,13 +174,13 @@ def clicklog400ms150msfull(p):
 
 def clicklog400ms500msfull(p):
     clicklog400ms150msfull(p)
-    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    # Only set 1, 400ms presentation time, including full revalation images, animal vs vehicle
     p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
     p['desc'] = 'Set 1 log scale, Animal vs Vehicle, 400ms stim + 500ms answer'
 
 def clickloglrp400ms500msfull(p):
     clicklog400ms150msfull(p)
-    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    # Only set 1, 400ms presentation time, including full revalation images, animal vs vehicle
     p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
     p['desc'] = 'Set 1 log scale, Animal vs Vehicle, 400ms stim + 500ms answer'
 
@@ -193,7 +193,6 @@ def charlie_test(p):
     p['config']['HIT Configuration']['title'] = 'Animal Realization'
     p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
     p['set_index'] = 50
-    p['db_name'] = 'charlie_db.db'
     p['exclude_participants'] = [
         'clicktionary',
         'clicktionary50ms',
@@ -201,3 +200,45 @@ def charlie_test(p):
         'clicktionary400msfull',
         'clicktionary400ms150msfull',
         'clicktionary400msvaranswerfull']
+    p['exclude_participants'] = ['clicklog400ms500msfull', 'clickloglrp400ms500msfull']
+
+def click_probfill(p):
+    base_settings(p)
+    # Only set 1, 50ms presentation time, including full revalation images, animal vs vehicle
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_log_scale_masked_images_400'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_images_balanced_cut'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_indices'] = range(4000, 4024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [150] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['set_index'] = 80
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_masked_images_balanced_cut_100'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples'
+    p['set_name'] = 'clicktionary'
+    p['set_indices'] = range(2000, 2020)
+    p['config']['HIT Configuration']['title'] = 'Animal Realization'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether or not a scrambled image contains an animal'
+    p['set_index'] = 50
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull.db',
+        'clicklog400ms500msfull.db',
+        'clicktionary.db',
+        'clicktionary400ms150msfull.db',
+        'clicktionary400msfull.db',
+        'clicktionary400msvaranswerfull.db',
+        'clicktionary50ms.db',
+        'clicktionary50msfull.db',
+        'clicktionary_50.db']

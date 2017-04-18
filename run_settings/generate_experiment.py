@@ -108,7 +108,6 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
     duplicates_data_loader.main(
         experiment_descs=p['exclude_participants'],
         output_name=p['db_name'])
-
     # deploy to server
     if deploy:
         subprocess.call(['rsync', '-avz', '--', run_path, 'turk:~/experiments/'])
@@ -117,5 +116,5 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('charlie_test', force_overwrite=True, deploy=False)
+    generate_experiment('click_probfill', force_overwrite=True, deploy=False)
     #sync_stimuli()
