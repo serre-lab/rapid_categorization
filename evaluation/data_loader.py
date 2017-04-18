@@ -355,19 +355,11 @@ class Data:
 if __name__ == '__main__':
     """Test: Check for duplicate subs."""
     data = Data()
+    data.ignore_timeouts = False
     # data.load_ground_truth(set_index=50, set_name='clicktionary')
     # revs, scores = data.get_summary_by_revalation()
     # print revs
     # print scores
-    for exp_name in experiment_descs.keys():
-        if re.search('\d+', exp_name) is not None:
-            # Ignore the original clicktionary exp in the config
-            print exp_name
-            data.get_participant_ids(experiment_run=exp_name)
-    s = set()
-    dup_workers = list(set(x for x in data.workerIds if x in s or s.add(x)))
-
-    if dup_workers is not None:
-        print 'Found repeat workers: %s' % dup_workers
-    else:
-        print 'No repeat workers!'
+    data.load('click_probfill')
+    for k in sorted([k.split('/')[1] for k in data.acc_by_im.keys()]):
+        print k

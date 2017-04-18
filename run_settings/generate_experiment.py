@@ -105,9 +105,9 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
     # Generate main psiturk config file
     write_values_to_config(p['config'], os.path.join(run_path, 'config.txt'))
     # Create database with duplicate participants blocked (if requested)
-    duplicates_data_loader.main(
-        experiment_descs=p['exclude_participants'],
-        output_name=p['db_name'])
+    duplicates_data_loader.create_dummy_participant_db(
+        experiment_names=p['exclude_participants'],
+        output_filename= os.path.join(run_path, 'participants.db'))
     # deploy to server
     if deploy:
         subprocess.call(['rsync', '-avz', '--', run_path, 'turk:~/experiments/'])
@@ -116,5 +116,5 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('click_probfill', force_overwrite=True, deploy=False)
-    #sync_stimuli()
+    generate_experiment('click_probfill', force_overwrite=True, deploy=True)
+    sync_stimuli()
