@@ -19,6 +19,12 @@ if hostname == 'x8':
     log_path = '/media/data/nsf_levels/log'
     experiment_path = '/media/data_cifs/nsf_levels/Results'
     plot_path = '/media/data_cifs/nsf_levels/plots'
+elif hostname == 'x9':
+    # Drew's machine
+    imageset_base_path = '/media/data_cifs/nsf_levels/'
+    clicktionary_imageset_path = '/media/data_cifs/clicktionary/causal_experiment'
+    experiment_path = '/media/data_cifs/nsf_levels/Results'
+    plot_path = '/media/data_cifs/nsf_levels/plots'
 elif hostname.beginswith('gpu'):
     # CCV
     imageset_base_path = '/users/seberhar/data/data/AnNonAnNIPS'

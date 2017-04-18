@@ -50,11 +50,11 @@ class Data:
         self.correct_rts = []
         self.workerIds = []
 
-    def load(self, experiment_run):
+    def load(self, experiment_run, exclude_workerids=None):
         p = get_settings(experiment_run)
         set_index, set_name = p['set_index'], p['set_name']
         self.load_ground_truth(set_index, set_name)
-        self.load_participants(experiment_run)
+        self.load_participants(experiment_run, exclude_workerids)
 
     def load_ground_truth(self, set_index, set_name):
         imageset_filename = util.get_imageset_filename(set_index, set_name)
@@ -69,11 +69,15 @@ class Data:
         if verbose: print "%d participants found in file %s." % (len(r), exp_filename)
         return r
 
-    def load_participants(self, experiment_run):
+    def load_participants(self, experiment_run, exclude_workers):
         r = self.load_participant_json(experiment_run, verbose=True)
         for i_subj in range(0,len(r)):
             data = json.loads(r[i_subj][3])
-            self.load_subject(data)
+            sub_id = json.loads(r[i_subj][3])['workerId']
+            if sub_id not in exclude_workers:
+                self.load_subject(data)
+            else:
+                print 'Excluding subject: %s' % sub_id
 
     def get_participant_ids(self, experiment_run):
         r = self.load_participant_json(experiment_run, verbose=True)
