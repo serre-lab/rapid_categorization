@@ -28,6 +28,7 @@ def get_cnn_performance_by_revelation(set_index, source_set_index=None):
     out_data['revelation_raw'] = revelations
     out_data['correctness_raw'] = data['true_labels'] == data['pred_labels']
     out_data['true_labels'] = data['true_labels']
+    out_data['source_filenames'] = data['source_filenames']
     return pickle.dump(out_data, open(fn, 'wb'))
     return out_data
 
