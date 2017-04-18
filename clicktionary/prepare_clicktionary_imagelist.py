@@ -40,4 +40,6 @@ def collect_images(subpath, set_index):
 
 if __name__ == '__main__':
     #collect_images(subpath='clicktionary_log_scale_masked_images', set_index=80)
-    collect_images(subpath='clicktionary_log_scale_masked_lrp', set_index=90)
+    #collect_images(subpath='clicktionary_log_scale_masked_lrp', set_index=90)
+    #collect_images(subpath='clicktionary_probabilistic_region_growth', set_index=100)
+    collect_images(subpath='clicktionary_uniform_region_growth', set_index=110)

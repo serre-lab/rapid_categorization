@@ -212,14 +212,26 @@ def plot_results_by_revelation_and_max_answer_time(experiment_run='clicktionary'
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.pdf' % experiment_run))
     print 'Saved to: %s' % os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
 
+def plot_cnn_comparison(set_indexes):
+    colors = ['red', 'black', 'blue']
+    for i, set_index in enumerate(set_indexes):
+        data_cnn = get_cnn_results_by_revelation(set_index)
+        print data_cnn
+        do_plot(data_cnn, colors[i], 'CNN %d' % set_index)
+    plt.legend()
+    outfn = os.path.join(config.plot_path, 'cnn_perf_by_revelation_%s.png' % str(set_indexes))
+    plt.savefig(outfn)
+    print 'Saved to: %s' % outfn
+
 if __name__ == '__main__':
     # chosen_exp = ['clicklog400ms500msfull']
-    chosen_exp = [['clicklog400ms500msfull', 'clicklog400ms150msfull']]
-    for exp in chosen_exp:
-        plt.figure()
-        plot_results_by_revelation(experiment_run=exp)
+    #chosen_exp = [['clicklog400ms500msfull', 'clicklog400ms150msfull']]
+    #for exp in chosen_exp:
+    #    plt.figure()
+    #    plot_results_by_revelation(experiment_run=exp)
         #plt.figure()
         #plot_human_dprime(exp)
     #plot_results_by_revaluation_by_class(set_index=50, set_name='clicktionary')
     #plot_human_dprime(set_index=50)
+    plot_cnn_comparison([110, 100])
     plt.show()

@@ -5,7 +5,6 @@ import operator as op
 import predict
 import util
 from ext_caffe_direct import ext_caffe_direct
-from ext_gist import do_gist
 
 def opt_C(cvals, model_name, feature_name, classifier_type, set_name, train_batch_num, do_norm):
     import train_classifier
@@ -128,6 +127,6 @@ if __name__ == '__main__':
     opt_params['subset'] = ''#'_pca1'
 
     #build_classifiers(opt_params, batch_size, [], extract_trainset, best_C=None, random_sample_ident=random_sample_ident, force_overwrite=False)
-    imset = [70]#1603241729
+    imset = [110]#1603241729
     extract_layers(opt_params['model_name'], opt_params['feature_name'], random_sample_ident=random_sample_ident, set_name='clicktionary', batches=imset, batch_size=batch_size, gpu_idx=3, force_overwrite=False)
     extract_predictions(opt_params, 'clicktionary', imset, do_norm=True, force_overwrite=False)
