@@ -13,6 +13,17 @@ from scipy.stats import norm
 from rapid_categorization.run_settings.settings import get_settings
 
 
+def apply_log_scale(data_human, data_cnn):
+    # Check if CNN and human are in the same scale. If not, recode the CNN.
+    uni_human_rev = np.unique(data_human[:, 0])
+    uni_cnn_rev = np.unique(data_cnn[:, 0])
+    if not all(uni_human_rev == uni_cnn_rev):
+        for hr, cr in zip(uni_human_rev, uni_cnn_rev):
+            it_idx = data_cnn[:, 0] == cr
+            data_cnn[it_idx, 0] = hr
+    return data_cnn
+
+
 def get_cnn_results_by_revelation(set_index, off=0.0, include_true_labels=False):
     pickle_name=os.path.join(config.pickle_path, 'perf_by_revelation_clicktionary_%d.p' % set_index)
     with open(pickle_name) as f:
@@ -206,13 +217,7 @@ def plot_results_by_revelation(
     # CNN is always the same
     data_cnn = get_cnn_results_by_revelation(set_index)
     if p['log_scale_revelations']:
-        # Check if CNN and human are in the same scale. If not, recode the CNN.
-        uni_human_rev = np.unique(data_human[:, 0])
-        uni_cnn_rev = np.unique(data_cnn[:, 0])
-        if not all(uni_human_rev == uni_cnn_rev):
-            for hr, cr in zip(uni_human_rev, uni_cnn_rev):
-                it_idx = data_cnn[:, 0] == cr
-                data_cnn[it_idx, 0] = hr
+        data_cnn = apply_log_scale(data_human, data_cnn)
     do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
@@ -274,4 +279,5 @@ if __name__ == '__main__':
         experiment_run='click_probfill',
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
         fit_line=False)
+    plt.show()
     plt.show()
