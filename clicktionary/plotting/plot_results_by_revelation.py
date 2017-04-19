@@ -24,16 +24,33 @@ def apply_log_scale(data_human, data_cnn):
     return data_cnn
 
 
-def get_cnn_results_by_revelation(set_index, off=0.0, include_true_labels=False):
+def get_cnn_results_by_revelation(set_index, off=0.0, include_true_labels=False, filter_class_file=None):
     pickle_name=os.path.join(config.pickle_path, 'perf_by_revelation_clicktionary_%d.p' % set_index)
     with open(pickle_name) as f:
         data = pickle.load(f)
+    if filter_class_file is not None:
+        with open(os.path.join(config.imageset_base_path, filter_class_file)) as f:
+            classes = f.readlines()
+        classes = [x.split(' ')[0] for x in classes]
+        rev_raw = np.asarray([])
+        correct_raw = np.asarray([])
+        true_labs = np.asarray([])
+        for idx in range(len(data['source_filenames'])):
+            if any([x in data['source_filenames'][idx] for x in classes]):
+                rev_raw = np.append(rev_raw, data['revelation_raw'][idx])
+                correct_raw = np.append(correct_raw, data['correctness_raw'][idx])
+                true_labs = np.append(true_labs, data['true_labels'][idx])
+    else:
+        rev_raw = data['revelation_raw']
+        correct_raw = data['correctness_raw']
+        true_labs = data['true_labels']
+
     if include_true_labels:
         return np.vstack((
-            data['revelation_raw'] + off, data['correctness_raw'], data['true_labels'])).transpose()
+            rev_raw + off, correct_raw, true_labs)).transpose()
     else:
         return np.vstack((
-                data['revelation_raw'] + off, data['correctness_raw'])).transpose()
+                rev_raw + off, correct_raw)).transpose()
 
 
 def combine_revs_and_scores(revs, scores, off=0.0, is_inverted_rev=True, is_log_scale=False, full_val=200):
@@ -98,7 +115,10 @@ def do_plot(data, clr, label, log_scale=False, estimator=np.mean, full_size=200,
     ax.set_yticklabels(['{:3.0f}%'.format(x*100) for x in ax.get_yticks()])
     ax.set_ylabel('Categorization accuracy (%)')
     plt.tight_layout()
-
+    mean_values = np.asarray(
+        [df[df['Revelation'] == x]['correctness'].mean()
+            for x in np.unique(df['Revelation'])])
+    return mean_values
 
 def do_plot_dprime(data, clr, label):
     revs = data[:,0]
@@ -204,6 +224,7 @@ def plot_results_by_revelation(
             do_plot(data_human, color, title, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
         plt.title('Accuracy by log-spaced image feature revelation\n')
         experiment_run = '_'.join(experiment_run)
+        human_means = []
     else:
         p = get_settings(experiment_run)
         set_index, set_name = p['set_index'], p['set_name']
@@ -212,17 +233,22 @@ def plot_results_by_revelation(
             log_scale=p['log_scale_revelations'],
             exclude_workerids=exclude_workerids)
         plt.title('Accuracy by image revelation\n' + p['desc'])
-        do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+        human_means = do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
 
     # CNN is always the same
-    data_cnn = get_cnn_results_by_revelation(set_index)
+    if 'cnn_class_file' in p.keys():
+        filter_class_file = p['cnn_class_file']
+    else:
+        filter_class_file = None
+    data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file=filter_class_file)
     if p['log_scale_revelations']:
         data_cnn = apply_log_scale(data_human, data_cnn)
-    do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+    cnn_means = do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
     print 'Saved to: %s' % os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
+    return human_means, cnn_means
 
 
 def plot_results_by_revelation_and_max_answer_time(
@@ -275,9 +301,10 @@ if __name__ == '__main__':
     #plot_results_by_revaluation_by_class(set_index=50, set_name='clicktionary')
     #plot_human_dprime(set_index=50)
     #plot_cnn_comparison([110, 100])
-    plot_results_by_revelation(
+    human_means, cnn_means = plot_results_by_revelation(
         experiment_run='click_probfill',
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
         fit_line=False)
     plt.show()
-    plt.show()
+
+    #TODO find MIRCs by np.argmax(diff( .5 + human_means))

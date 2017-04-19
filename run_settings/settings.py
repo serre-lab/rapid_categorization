@@ -235,3 +235,4 @@ def click_probfill(p):
         'clicktionary400msvaranswerfull',
         'clicktionary50ms',
         'clicktionary50msfull']
+    p['cnn_class_file'] = 'classes_exp_1.txt'
