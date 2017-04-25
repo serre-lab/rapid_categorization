@@ -25,6 +25,8 @@ elif hostname == 'x9':
     clicktionary_imageset_path = '/media/data_cifs/clicktionary/causal_experiment'
     experiment_path = '/media/data_cifs/nsf_levels/Results'
     plot_path = '/media/data_cifs/nsf_levels/plots'
+    base_path = '/media/data_cifs/nsf_levels/'
+    log_path = '/media/data_cifs/nsf_levels/log'
 elif hostname.beginswith('gpu'):
     # CCV
     imageset_base_path = '/users/seberhar/data/data/AnNonAnNIPS'

@@ -18,6 +18,6 @@ if hostname == 'x8':
 elif hostname == 'g17':
     psiturk_run_path = '/home/charlie/psiturk/runs'
 elif hostname == 'x9':
-    psiturk_run_path = '/home/drew/Documents/psiturk/runs'
+    psiturk_run_path = '/home/drew/psiturk/runs'
 else:
     raise RuntimeError('Add your path to the config.')

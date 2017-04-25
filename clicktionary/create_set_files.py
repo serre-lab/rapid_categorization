@@ -56,5 +56,11 @@ if __name__ == '__main__':
     #create_set_files(20, 50, 'clicktionary', 3000, 'clicktionary', exclusion_files=[exp2, exp3])
     #create_set_files(22, 50, 'clicktionary', 4000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3])
     #create_set_files(24, 80, 'clicktionary', 5000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3], set_range=110)
-    create_set_files(24, 90, 'clicktionary', 6000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3],
-                     set_range=110)
+    # create_set_files(24, 90, 'clicktionary', 6000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3],
+    #                  set_range=110)
+    # create_set_files(24, 120, 'clicktionary', 7000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3],
+    #                  set_range=110)  # clicktionary prob growth centered
+    # create_set_files(24, 130, 'clicktionary', 8000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3],
+    #                  set_range=110)  # lrp prob growth centered
+    create_set_files(24, 140, 'clicktionary', 9000, 'clicktionary', include_full=True, exclusion_files=[exp2, exp3],
+                     set_range=110)  # fixation prob growth centered

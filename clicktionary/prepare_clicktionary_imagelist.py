@@ -42,4 +42,7 @@ if __name__ == '__main__':
     #collect_images(subpath='clicktionary_log_scale_masked_images', set_index=80)
     #collect_images(subpath='clicktionary_log_scale_masked_lrp', set_index=90)
     #collect_images(subpath='clicktionary_probabilistic_region_growth', set_index=100)
-    collect_images(subpath='clicktionary_uniform_region_growth', set_index=110)
+    #collect_images(subpath='clicktionary_uniform_region_growth', set_index=110)
+    collect_images(subpath='clicktionary_probabilistic_region_growth_centered', set_index=120)
+    collect_images(subpath='lrp_probabilistic_region_growth_centered', set_index=130)
+    collect_images(subpath='fixation_prediction_probabilistic_region_growth_centered', set_index=140)

@@ -8,7 +8,7 @@ from rapid_categorization.model.util import get_imageset_filename
 from rapid_categorization.config import psiturk_run_path
 import subprocess
 from ConfigParser import SafeConfigParser
-from rapid_categorization.prepare_stimuli import generate_stimulus_videos
+from rapid_categorization.prepare_stimuli.generate_stimulus_videos import generate_stimulus_videos
 from rapid_categorization.evaluation import duplicates_data_loader
 
 def apply_dict_to_template(src_filename, dst_filename, settings):
@@ -116,5 +116,7 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('click_probfill', force_overwrite=True, deploy=True)
+    generate_experiment('click_center_probfill', force_overwrite=True, deploy=True)
+    # generate_experiment('lrp_center_probfill', force_overwrite=True, deploy=True)
+    # generate_experiment('fixation_center_probfill', force_overwrite=True, deploy=True)
     sync_stimuli()
