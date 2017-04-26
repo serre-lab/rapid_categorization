@@ -240,9 +240,10 @@ def plot_results_by_revelation(
         filter_class_file = p['cnn_class_file']
     else:
         filter_class_file = None
+    print set_index
     data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file=filter_class_file)
     if p['log_scale_revelations']:
-        data_cnn = apply_log_scale(data_human, data_cnn)
+       data_cnn = apply_log_scale(data_human, data_cnn)
     cnn_means = do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
     plt.legend()
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
@@ -278,12 +279,14 @@ def plot_results_by_revelation_and_max_answer_time(
     print 'Saved to: %s' % os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
 
 
-def plot_cnn_comparison(set_indexes):
-    colors = ['red', 'black', 'blue']
-    for i, set_index in enumerate(set_indexes):
-        data_cnn = get_cnn_results_by_revelation(set_index)
+def plot_cnn_comparison(set_indexes, labels=None, colors=['red', 'black', 'blue']):
+    if labels is None:
+        labels = ['CNN %d' % set_index for set_index in set_indexes]
+    sns.set_style('white')
+    for i, (set_index, lab) in enumerate(zip(set_indexes, labels)):
+        data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file='classes_exp_1.txt')
         print data_cnn
-        do_plot(data_cnn, colors[i], 'CNN %d' % set_index)
+        do_plot(data_cnn, colors[i], lab)
     plt.legend()
     outfn = os.path.join(config.plot_path, 'cnn_perf_by_revelation_%s.png' % str(set_indexes))
     plt.savefig(outfn)
@@ -300,9 +303,17 @@ if __name__ == '__main__':
         #plot_human_dprime(exp)
     #plot_results_by_revaluation_by_class(set_index=50, set_name='clicktionary')
     #plot_human_dprime(set_index=50)
-    #plot_cnn_comparison([110, 100])
+    # plot_cnn_comparison(
+    #     [120, 130, 140],
+    #     labels=['Human Realization Maps', 'VGG16 LRP', 'VGG16 Salience'],
+    #     colors=['#fc8d59', '#2ca25f', '#91bfdb'])
+    plot_cnn_comparison(
+        [110, 120],
+        labels=['Uncentered Human Realization Maps', 'Centered Human Realization Maps'],
+        colors=['#fc8d59', '#91bfdb'])
+    plt.show()
     human_means, cnn_means = plot_results_by_revelation(
-        experiment_run='click_probfill',
+        experiment_run='click_center_probfill',
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
         fit_line=False)
     plt.show()

@@ -33,6 +33,9 @@ def get_cnn_performance_by_revelation(set_index, source_set_index=None):
     return out_data
 
 if __name__ == '__main__':
-    get_cnn_performance_by_revelation(100, 100)
-    get_cnn_performance_by_revelation(110, 110)
-    get_cnn_performance_by_revelation(71, 70)
+    # get_cnn_performance_by_revelation(100, 100)
+    # get_cnn_performance_by_revelation(110, 110)
+    # get_cnn_performance_by_revelation(71, 70)
+    get_cnn_performance_by_revelation(120)
+    get_cnn_performance_by_revelation(130)
+    get_cnn_performance_by_revelation(140)

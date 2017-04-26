@@ -240,9 +240,9 @@ def click_probfill(p):
 def click_center_probfill(p):
     base_settings(p)
     # Only set 1, 400ms presentation time + 500ms answer time including full revalation images, animal vs vehicle
-    p['video_base_path'] = '/media/data_cifs/clicktionary/causal_experiment/data_clicktionary/clicktionary_centered_probabilistic_region_growth_50'
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_centered_probabilistic_region_growth_50'
     p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_centered_probabilistic_region_growth'
-    p['example_path'] = '/media/data_cifs/clicktionary/causal_experiment/data_clicktionary/masked_examples_animal_vehicle'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
     p['set_name'] = 'clicktionary'
     p['set_index'] = 120
     p['set_indices'] = range(5000, 5024)
@@ -274,9 +274,9 @@ def click_center_probfill(p):
 def lrp_center_probfill(p):
     base_settings(p)
     # Only set 1, 400ms presentation time + 500ms answer time including full revalation images, animal vs vehicle
-    p['video_base_path'] = '/media/data_cifs/clicktionary/causal_experiment/data_clicktionary/lrp_centered_probabilistic_region_growth_50'
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/lrp_centered_probabilistic_region_growth_50'
     p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/lrp_centered_probabilistic_region_growth'
-    p['example_path'] = '/media/data_cifs/clicktionary/causal_experiment/data_clicktionary/masked_examples_animal_vehicle'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
     p['set_name'] = 'clicktionary'
     p['set_index'] = 130
     p['set_indices'] = range(5000, 5024)
@@ -311,9 +311,9 @@ def lrp_center_probfill(p):
 def fixation_center_probfill(p):
     base_settings(p)
     # Only set 1, 400ms presentation time + 500ms answer time including full revalation images, animal vs vehicle
-    p['video_base_path'] = '/media/data_cifs/clicktionary/causal_experiment/data_clicktionary/fixation_centered_probabilistic_region_growth_50'
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/fixation_centered_probabilistic_region_growth_50'
     p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/fixation_centered_probabilistic_region_growth'
-    p['example_path'] = '/media/data_cifs/clicktionary/causal_experiment/data_clicktionary/masked_examples_animal_vehicle'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
     p['set_name'] = 'clicktionary'
     p['set_index'] = 140
     p['set_indices'] = range(5000, 5024)

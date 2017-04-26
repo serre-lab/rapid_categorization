@@ -56,8 +56,10 @@ def generate_stimulus_videos(image_folder, video_folder, onset_times_ms, after_t
 if __name__ == '__main__':
     onset_times_ms = [1000, 1100, 1200, 1300, 1400, 1500, 1600]
     after_time_ms = 500
-    input_image_path = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth'
-    generate_stimulus_videos(input_image_path, '/media/data_cifs/rapid_categorization/clicktionary_probabilistic_region_growth_400', onset_times_ms, after_time_ms, stim_show_time_ms=400)
+    # input_image_path = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth_centered/'
+    # input_image_path = '/media/data_cifs/clicktionary/causal_experiment/lrp_probabilistic_region_growth_centered/'
+    # input_image_path = '/media/data_cifs/clicktionary/causal_experiment/fixation_prediction_probabilistic_region_growth_centered/'
+    # generate_stimulus_videos(input_image_path, '/media/data_cifs/rapid_categorization/clicktionary_probabilistic_region_growth_400', onset_times_ms, after_time_ms, stim_show_time_ms=400)
     #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs', '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_500', config.onset_times_ms, config.after_time_ms, stim_show_time_ms=500)
     #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
     #                         '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_200',
@@ -65,3 +67,19 @@ if __name__ == '__main__':
     #generate_stimulus_videos('/media/data_cifs/clicktionary/causal_experiment/clicktionary_masked_mircs',
     #                     '/media/data_cifs/rapid_categorization/clicktionary_masked_mircs_100',
     #                     config.onset_times_ms, config.after_time_ms, stim_show_time_ms=100)
+
+    input_image_paths = [
+        '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth_centered/',
+        '/media/data_cifs/clicktionary/causal_experiment/lrp_probabilistic_region_growth_centered/',
+        '/media/data_cifs/clicktionary/causal_experiment/fixation_prediction_probabilistic_region_growth_centered/',
+        ]
+
+    output_paths = [
+        '/media/data_cifs/rapid_categorization/clicktionary_centered_probabilistic_region_growth_50/',
+        '/media/data_cifs/rapid_categorization/lrp_centered_probabilistic_region_growth_50/',
+        '/media/data_cifs/rapid_categorization/fixation_centered_probabilistic_region_growth_50/',
+        ]
+
+    [generate_stimulus_videos(
+        p, o, onset_times_ms, after_time_ms, stim_show_time_ms=400)
+        for p, o in zip(input_image_paths, output_paths)]
