@@ -81,5 +81,5 @@ if __name__ == '__main__':
         ]
 
     [generate_stimulus_videos(
-        p, o, onset_times_ms, after_time_ms, stim_show_time_ms=400)
+        p, o, onset_times_ms, after_time_ms, stim_show_time_ms=50)
         for p, o in zip(input_image_paths, output_paths)]

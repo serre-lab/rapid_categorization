@@ -88,22 +88,34 @@ def get_human_results_by_revaluation(
     return combine_revs_and_scores(revs, scores, off=off, is_inverted_rev=is_inverted_rev, is_log_scale=log_scale)
 
 
-def do_plot(data, clr, label, log_scale=False, estimator=np.mean, full_size=200, max_val=None, fit_line=True, ci=66.6):
+def do_plot(
+        data,
+        clr,
+        label,
+        log_scale=False,
+        estimator=np.mean,
+        full_size=200,
+        max_val=None,
+        fit_line=True,
+        ci=66.6,
+        plot_chance=0.5,
+        order=1):
     df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
-    full_size_df = df[df['Revelation'] == full_size]
-    if max_val is not None:
-        full_size_df.loc[:, 'Revelation'] = max_val
-    else:
-        max_val = full_size
-    df = df[df['Revelation'] < full_size]
     # df = df[df['Revelation'] > 0]
     ax = sns.regplot(
         data=df, x='Revelation', y='correctness', ci=ci, n_boot=200,
         x_estimator=estimator, color=clr, truncate=True, fit_reg=fit_line,
-        order=3, label=label) # , logistic=False
-    ax = sns.regplot(
-        data=full_size_df, x='Revelation', y='correctness', ci=ci, n_boot=200,
-        x_estimator=estimator, color=clr, truncate=True)
+        order=order, label=label) # , logistic=False
+    if full_size in data:
+        full_size_df = df[df['Revelation'] == full_size]
+        if max_val is not None:
+            full_size_df.loc[:, 'Revelation'] = max_val
+        else:
+            max_val = full_size
+        df = df[df['Revelation'] < full_size]
+        ax = sns.regplot(
+            data=full_size_df, x='Revelation', y='correctness', ci=ci, n_boot=200,
+            x_estimator=estimator, color=clr, truncate=True)
     if log_scale:
         ax.set_xscale('log')
         ax.set_xlim(0.2, max_val + 2000)
@@ -115,6 +127,8 @@ def do_plot(data, clr, label, log_scale=False, estimator=np.mean, full_size=200,
     ax.set_yticklabels(['{:3.0f}%'.format(x*100) for x in ax.get_yticks()])
     ax.set_ylabel('Categorization accuracy (%)')
     plt.tight_layout()
+    if plot_chance is not None:
+        plt.axhline(plot_chance, color='gray', linestyle='dashed', linewidth=2)
     mean_values = np.asarray(
         [df[df['Revelation'] == x]['correctness'].mean()
             for x in np.unique(df['Revelation'])])
@@ -156,30 +170,72 @@ def do_plot_dprime(data, clr, label):
     plt.plot(urevs, ms, clr + 'o', label = ' mean accuracy')
 
 
-def plot_results_by_revaluation_by_class(experiment_run, exclude_workerids=None):
-    set_index, set_name = config.get_experiment_sets(experiment_run)
-    data_cnn = get_cnn_results_by_revelation(set_index)
-    exps = [set(), set()]
-    for i ,fn in enumerate(['classes_exp_1.txt', 'classes_exp_2.txt']):
-        fn_full = os.path.join('/media/data_cifs/clicktionary/causal_experiment', fn)
+def plot_results_by_revaluation_by_class(
+        experiment_run,
+        class_file,
+        exclude_workerids=None,
+        is_inverted_rev=False,
+        ci=66.6,
+        colorpallete='Set2',
+        fit_line=True):
+    p = get_settings(experiment_run)
+    set_index = p['set_index']
+
+    # Parse class file
+    exps = []
+    for i, fn in enumerate([class_file]):
+        fn_full = os.path.join(
+            '/media/data_cifs/clicktionary/causal_experiment', fn)
         lines = open(fn_full, 'rt').read().splitlines()
         for l in lines:
             classname, cat = l.split(' ')
-            exps[int(cat)].add(classname)
-    data_human1 = get_human_results_by_revaluation(set_index, set_name, filename_filter=exps[0], off=1, exclude_workerids=exclude_workerids)
-    data_human2 = get_human_results_by_revaluation(set_index, set_name, filename_filter=exps[1], off=2, exclude_workerids=exclude_workerids)
+            cat = int(cat)
+            if len(exps) <= cat:
+                exps.append(set())
+            exps[cat].add(classname)
 
-    #data = np.vstack((data_cnn, data_human))
-    #humanness = np.vstack((np.zeros((data_cnn.shape[0], 1)), np.ones((data_human.shape[0], 1))))
-    #data = np.hstack((data, humanness))
+    # Plot Human
+    colors = sns.color_palette(colorpallete, len(exps))
+    data_human = [get_human_results_by_revaluation(
+        experiment_run=experiment_run,
+        filename_filter=x,
+        off=0,
+        is_inverted_rev=is_inverted_rev,
+        log_scale=p['log_scale_revelations'],
+        exclude_workerids=exclude_workerids)
+        for idx, x in enumerate(exps)]
+    [do_plot(
+        x,
+        c,
+        list(l),
+        log_scale=p['log_scale_revelations'],
+        ci=ci,
+        fit_line=fit_line) for x, c, l in zip(
+        data_human, colors, exps)]
+
+    # Plot CNN
+    if 'cnn_class_file' in p.keys():
+        filter_class_file = p['cnn_class_file']
+    else:
+        filter_class_file = None
+    print set_index
+    data_cnn = get_cnn_results_by_revelation(
+        set_index, filter_class_file=filter_class_file)
+    if p['log_scale_revelations']:
+        data_cnn = apply_log_scale(data_human[0], data_cnn)
     sns.set_style('white')
-    do_plot(data_cnn, 'black', 'CNN')
-    do_plot(data_human1, 'red', 'Human Non-animal')
-    do_plot(data_human2, 'green', 'Human Animal')
+    do_plot(data_cnn,
+        'black',
+        'CNN',
+        log_scale=p['log_scale_revelations'],
+        ci=ci,
+        fit_line=fit_line)
     plt.title('Accuracy by image revelation')
     plt.legend()
-    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_by_class_%s.png' % experiment_run))
-    plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_by_class_%s.pdf' % experiment_run))
+    plt.savefig(
+        os.path.join(
+            config.plot_path,
+            'perf_by_revelation_by_class_%s.png' % experiment_run))
 
 
 def plot_human_dprime(experiment_run, exclude_workerids=None):
@@ -207,20 +263,26 @@ def plot_human_dprime(experiment_run, exclude_workerids=None):
 def plot_results_by_revelation(
         experiment_run='clicktionary',
         exclude_workerids=None,
-        fit_line=True):
+        fit_line=True,
+        colorpallete='Set2',
+        human_labels=None,
+        cnn_label='VGG16 performance'):
     sns.set_style('white')
     if isinstance(experiment_run, list):
         # colors = sns.color_palette('Set1', len(experiment_run))
-        colors = sns.color_palette(["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"][:len(experiment_run)])
-        for exp, color in zip(experiment_run, colors):
+        colors = sns.color_palette(colorpallete, len(experiment_run))
+        for idx, (exp, color) in enumerate(zip(experiment_run, colors)):
             p = get_settings(exp)
             set_index, set_name = p['set_index'], p['set_name']
             data_human = get_human_results_by_revaluation(
                 exp, off=0, is_inverted_rev=False,
                 log_scale=p['log_scale_revelations'],
                 exclude_workerids=exclude_workerids)
-            exp_params = [x for x in re.split('[A-Za-z]+',exp) if len(x) > 0]
-            title = 'Human image time: %s | response time: %s' % (exp_params[0], exp_params[1])
+            if human_labels is None:
+                exp_params = [x for x in re.split('[A-Za-z]+',exp) if len(x) > 0]
+                title = 'Human image time: %s | response time: %s' % (exp_params[0], exp_params[1])
+            else:
+                title = human_labels[idx]
             do_plot(data_human, color, title, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
         plt.title('Accuracy by log-spaced image feature revelation\n')
         experiment_run = '_'.join(experiment_run)
@@ -233,7 +295,7 @@ def plot_results_by_revelation(
             log_scale=p['log_scale_revelations'],
             exclude_workerids=exclude_workerids)
         plt.title('Accuracy by image revelation\n' + p['desc'])
-        human_means = do_plot(data_human, 'red', 'Human', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+        human_means = do_plot(data_human, '#fc8d59', 'Human', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
 
     # CNN is always the same
     if 'cnn_class_file' in p.keys():
@@ -244,8 +306,8 @@ def plot_results_by_revelation(
     data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file=filter_class_file)
     if p['log_scale_revelations']:
        data_cnn = apply_log_scale(data_human, data_cnn)
-    cnn_means = do_plot(data_cnn, 'black', 'CNN', log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
-    plt.legend()
+    cnn_means = do_plot(data_cnn, '#91bfdb', cnn_label, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+    plt.legend(loc='upper left')
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
     print 'Saved to: %s' % os.path.join(config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
@@ -285,7 +347,6 @@ def plot_cnn_comparison(set_indexes, labels=None, colors=['red', 'black', 'blue'
     sns.set_style('white')
     for i, (set_index, lab) in enumerate(zip(set_indexes, labels)):
         data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file='classes_exp_1.txt')
-        print data_cnn
         do_plot(data_cnn, colors[i], lab)
     plt.legend()
     outfn = os.path.join(config.plot_path, 'cnn_perf_by_revelation_%s.png' % str(set_indexes))
@@ -307,15 +368,27 @@ if __name__ == '__main__':
     #     [120, 130, 140],
     #     labels=['Human Realization Maps', 'VGG16 LRP', 'VGG16 Salience'],
     #     colors=['#fc8d59', '#2ca25f', '#91bfdb'])
-    plot_cnn_comparison(
-        [110, 120],
-        labels=['Uncentered Human Realization Maps', 'Centered Human Realization Maps'],
-        colors=['#fc8d59', '#91bfdb'])
-    plt.show()
+    # plot_cnn_comparison(
+    #     [110, 120],
+    #     labels=['Uncentered Human Realization Maps', 'Centered Human Realization Maps'],
+    #     colors=['#fc8d59', '#91bfdb'])
+    # plt.show()
     human_means, cnn_means = plot_results_by_revelation(
-        experiment_run='click_center_probfill',
+        experiment_run=['click_center_probfill_650', 'lrp_center_probfill_650'],
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
-        fit_line=False)
+        fit_line=False,
+        human_labels=[
+            'Human performance: Clicktionary centered probabilistic; 50ms stim, 650ms response.',
+            'Human performance: VGG16 LRP centered probabilistic; 50ms stim, 650ms response.',
+            ])
     plt.show()
 
+
+    # plot_results_by_revaluation_by_class(
+    #     experiment_run='click_center_probfill_650',
+    #     exclude_workerids=['A25YG9M911WA3T'],
+    #     class_file='classes_exp_1.txt',
+    #     ci=66.6,
+    #     fit_line=False)  # 'all_classes_exp_1.txt'
+    # plt.show()
     #TODO find MIRCs by np.argmax(diff( .5 + human_means))
