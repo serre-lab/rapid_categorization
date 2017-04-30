@@ -49,8 +49,9 @@ class Data:
         self.ignore_timeouts = True
         self.correct_rts = []
         self.workerIds = []
+        self.statuses = (3, 4, 5, 7)  # See https://github.com/NYUCCL/psiTurk/blob/master/psiturk/experiment.py
 
-    def load(self, experiment_run, exclude_workerids=None):
+    def load(self, experiment_run, exclude_workerids=['']):
         p = get_settings(experiment_run)
         set_index, set_name = p['set_index'], p['set_name']
         self.load_ground_truth(set_index, set_name)
@@ -65,7 +66,7 @@ class Data:
     def load_participant_json(self, experiment_run, verbose=True):
         exp_filename = util.get_experiment_db_filename_by_run(experiment_run)
         r = sqlite3.connect(exp_filename).cursor().execute(
-            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in (3,4) AND NOT datastring==''").fetchall()
+            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in %s AND NOT datastring==''" % (self.statuses,)).fetchall()
         if verbose: print "%d participants found in file %s." % (len(r), exp_filename)
         return r
 
@@ -364,6 +365,6 @@ if __name__ == '__main__':
     # revs, scores = data.get_summary_by_revalation()
     # print revs
     # print scores
-    data.load('click_probfill')
+    data.load('click_center_probfill_400stim_150res')
     for k in sorted([k.split('/')[1] for k in data.acc_by_im.keys()]):
         print k

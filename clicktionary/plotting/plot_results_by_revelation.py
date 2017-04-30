@@ -96,16 +96,30 @@ def do_plot(
         estimator=np.mean,
         full_size=200,
         max_val=None,
-        fit_line=True,
+        fit_line='linear',
         ci=66.6,
         plot_chance=0.5,
-        order=1):
+        order=1,
+        x_jitter=0.1):
     df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
     # df = df[df['Revelation'] > 0]
+
+    # Interpret fit from fit_line
+    if 'linear' in fit_line:
+        logistic=False
+        fit_line=True
+    elif 'logistic' in fit_line:
+        logistic=True
+        fit_line=True
+        order=0
+    else:
+        logistic=False
+        fit_line=False
+        
     ax = sns.regplot(
         data=df, x='Revelation', y='correctness', ci=ci, n_boot=200,
         x_estimator=estimator, color=clr, truncate=True, fit_reg=fit_line,
-        order=order, label=label) # , logistic=False
+        order=order, logistic=logistic, label=label, x_jitter=x_jitter) # , logistic=False
     if full_size in data:
         full_size_df = df[df['Revelation'] == full_size]
         if max_val is not None:
@@ -263,17 +277,22 @@ def plot_human_dprime(experiment_run, exclude_workerids=None):
 def plot_results_by_revelation(
         experiment_run='clicktionary',
         exclude_workerids=None,
-        fit_line=True,
-        colorpallete='Set2',
+        fit_line=['linear'],
+        human_color_pallete='Set2',
+        cnn_colorpallete='Set1',
         human_labels=None,
-        cnn_label='VGG16 performance'):
+        cnn_labels='VGG16 performance on clicktionary maps',
+        cnn_index=None):
     sns.set_style('white')
     if isinstance(experiment_run, list):
         # colors = sns.color_palette('Set1', len(experiment_run))
-        colors = sns.color_palette(colorpallete, len(experiment_run))
-        for idx, (exp, color) in enumerate(zip(experiment_run, colors)):
+        colors = sns.color_palette(human_color_pallete, len(experiment_run))
+        if len(fit_line) < len(experiment_run):
+            fit_line = np.repeat(fit_line, len(experiment_run))
+            print 'Expanding fit_lines to match size of experiment_run'
+        for idx, (exp, color, fl) in enumerate(zip(experiment_run, colors, fit_line)):
             p = get_settings(exp)
-            set_index, set_name = p['set_index'], p['set_name']
+            set_index = p['set_index']
             data_human = get_human_results_by_revaluation(
                 exp, off=0, is_inverted_rev=False,
                 log_scale=p['log_scale_revelations'],
@@ -283,13 +302,14 @@ def plot_results_by_revelation(
                 title = 'Human image time: %s | response time: %s' % (exp_params[0], exp_params[1])
             else:
                 title = human_labels[idx]
-            do_plot(data_human, color, title, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+            import ipdb;ipdb.set_trace()
+            do_plot(data_human, color, title, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fl)
         plt.title('Accuracy by log-spaced image feature revelation\n')
         experiment_run = '_'.join(experiment_run)
         human_means = []
     else:
         p = get_settings(experiment_run)
-        set_index, set_name = p['set_index'], p['set_name']
+        set_index = p['set_index'],
         data_human = get_human_results_by_revaluation(
             experiment_run, off=0, is_inverted_rev=False,
             log_scale=p['log_scale_revelations'],
@@ -302,11 +322,21 @@ def plot_results_by_revelation(
         filter_class_file = p['cnn_class_file']
     else:
         filter_class_file = None
-    print set_index
-    data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file=filter_class_file)
-    if p['log_scale_revelations']:
-       data_cnn = apply_log_scale(data_human, data_cnn)
-    cnn_means = do_plot(data_cnn, '#91bfdb', cnn_label, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+    if cnn_index is None:
+        cnn_index = set_index
+    if isinstance(cnn_index, list):
+        cnn_means = []
+        colors = sns.color_palette(cnn_colorpallete, len(cnn_index))
+        for si, color, lab in zip(cnn_index, colors, cnn_labels):
+            data_cnn = get_cnn_results_by_revelation(si, filter_class_file=filter_class_file)
+            if p['log_scale_revelations']:
+                data_cnn = apply_log_scale(data_human, data_cnn)
+            cnn_means += [do_plot(data_cnn, color, lab, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)]
+    else:
+        data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file=filter_class_file)
+        if p['log_scale_revelations']:
+            data_cnn = apply_log_scale(data_human, data_cnn)
+        cnn_means = do_plot(data_cnn, '#91bfdb', cnn_labels, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
@@ -373,14 +403,55 @@ if __name__ == '__main__':
     #     labels=['Uncentered Human Realization Maps', 'Centered Human Realization Maps'],
     #     colors=['#fc8d59', '#91bfdb'])
     # plt.show()
+
     human_means, cnn_means = plot_results_by_revelation(
-        experiment_run=['click_center_probfill_650', 'lrp_center_probfill_650'],
+        experiment_run=['click_center_probfill_400stim_150res', 'lrp_center_probfill_400stim_150res'],  # ['click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],  # 'click_center_probfill_400stim_150res'],  # 'lrp_center_probfill_650'],  # , 'fixation_center_probfill_400stim_300res'],
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
-        fit_line=False,
+        fit_line=['logistic', 'linear'],  # ['linear','logistic'],
+        cnn_index=[120, 130],  # [120, 130, 140],
         human_labels=[
-            'Human performance: Clicktionary centered probabilistic; 50ms stim, 650ms response.',
-            'Human performance: VGG16 LRP centered probabilistic; 50ms stim, 650ms response.',
-            ])
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
+            'Human performance: VGG16 LRP centered probabilistic; 400ms stim, 150ms response.'
+            ],
+        cnn_labels=[
+            'VGG16 performance: Clicktionary centered probabilistic.',
+            'VGG16 performance: VGG16 LRP centered probabilistic.',
+            ],)
+    plt.show()
+
+
+    human_means, cnn_means = plot_results_by_revelation(
+        experiment_run=['click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],
+        exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
+        fit_line=['logistic', 'linear'], # ['linear','logistic'],
+        cnn_index=[120, 130],  # [120, 130, 140],
+        human_labels=[
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 300ms response.',
+            'Human performance: VGG16 LRP centered probabilistic; 400ms stim, 300ms response.'
+            ],
+        cnn_labels=[
+            'VGG16 performance: Clicktionary centered probabilistic.',
+            'VGG16 performance: VGG16 LRP centered probabilistic.',
+            ],)
+    plt.show()
+
+
+    human_means, cnn_means = plot_results_by_revelation(
+        experiment_run=['click_center_probfill_400stim_150res', 'lrp_center_probfill_400stim_150res', 'click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],
+        exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
+        fit_line=['logistic', 'linear', 'logistic', 'linear'],  # ['linear','logistic', 'linear','logistic'],
+        cnn_index=[120, 130],  # [120, 130, 140],
+        human_labels=[
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
+            'Human performance: VGG16 LRP centered probabilistic; 400ms stim, 150ms response.',
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 300ms response.',
+            'Human performance: VGG16 LRP centered probabilistic; 400ms stim, 300ms response.'
+
+            ],
+        cnn_labels=[
+            'VGG16 performance: Clicktionary centered probabilistic.',
+            'VGG16 performance: VGG16 LRP centered probabilistic.',
+            ],)
     plt.show()
 
 

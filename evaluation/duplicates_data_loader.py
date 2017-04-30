@@ -7,14 +7,15 @@ from hmax.levels import util
 class Data:
     def __init__(self):
         self.workerIds = set()
+        self.statuses = (3, 4, 5, 7)  # See https://github.com/NYUCCL/psiTurk/blob/master/psiturk/experiment.py
 
     def load_participant_json(self, experiment_run, verbose=True):
         exp_filename = util.get_experiment_db_filename_by_run(experiment_run)
         assert(os.path.isfile(exp_filename))
         con = sqlite3.connect(exp_filename)
         cur = con.cursor()
-        cur.execute(
-            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in (3,4) AND NOT datastring==''")
+        r = sqlite3.connect(exp_filename).cursor().execute(
+            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in %s AND NOT datastring==''" % (self.statuses,)).fetchall()
         data = cur.fetchall()
         if verbose: print "%d participants found in file %s." % (len(data), exp_filename)
         con.close()

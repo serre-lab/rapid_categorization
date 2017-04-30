@@ -71,15 +71,15 @@ if __name__ == '__main__':
     input_image_paths = [
         '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth_centered/',
         '/media/data_cifs/clicktionary/causal_experiment/lrp_probabilistic_region_growth_centered/',
-        '/media/data_cifs/clicktionary/causal_experiment/fixation_prediction_probabilistic_region_growth_centered/',
+        # '/media/data_cifs/clicktionary/causal_experiment/fixation_prediction_probabilistic_region_growth_centered/',
         ]
 
     output_paths = [
-        '/media/data_cifs/rapid_categorization/clicktionary_centered_probabilistic_region_growth_50/',
-        '/media/data_cifs/rapid_categorization/lrp_centered_probabilistic_region_growth_50/',
-        '/media/data_cifs/rapid_categorization/fixation_centered_probabilistic_region_growth_50/',
+        '/media/data_cifs/rapid_categorization/click_center_probfill_400stim_150res/',
+        '/media/data_cifs/rapid_categorization/lrp_center_probfill_400stim_150res/',
+        '/media/data_cifs/rapid_categorization/fixation_center_probfill_400stim_150res/',
         ]
 
     [generate_stimulus_videos(
-        p, o, onset_times_ms, after_time_ms, stim_show_time_ms=50)
+        p, o, onset_times_ms, after_time_ms, stim_show_time_ms=400)  # MAKE SURE STIM_SHOW_TIME = SETTINGS.PY
         for p, o in zip(input_image_paths, output_paths)]

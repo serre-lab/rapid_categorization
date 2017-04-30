@@ -377,3 +377,230 @@ def fixation_center_probfill_650(p):
         'click_center_probfill_650',
         'lrp_center_probfill_650']
     p['cnn_class_file'] = 'classes_exp_1.txt'
+
+
+
+def click_center_probfill_400stim_300res(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_centered_probabilistic_region_growth_400stim_300res'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_centered_probabilistic_region_growth'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_index'] = 120
+    p['set_indices'] = range(5000, 5024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [300] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['desc'] = '400 stim + 300 answer, centered probabilistic revelation'
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull',
+        'clicktionary',
+        'clicktionary400ms150msfull',
+        'clicktionary400msfull',
+        'clicktionary400msvaranswerfull',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'click_center_probfill']
+    p['cnn_class_file'] = 'classes_exp_1.txt'
+
+def lrp_center_probfill_400stim_300res(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/lrp_center_probfill_400stim_300res'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/lrp_centered_probabilistic_region_growth'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_index'] = 130
+    p['set_indices'] = range(5000, 5024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [300] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['desc'] = '400ms stim + 300ms answer, lrp probabilistic revelation'
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull',
+        'clicktionary',
+        'clicktionary400ms150msfull',
+        'clicktionary400msfull',
+        'clicktionary400msvaranswerfull',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'click_center_probfill',
+        'click_center_probfill_650',
+        'fixation_center_probfill_400stim_300res']
+    p['cnn_class_file'] = 'classes_exp_1.txt'
+
+def fixation_center_probfill_400stim_300res(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/fixation_centered_probabilistic_region_growth_400stim_300res'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/fixation_centered_probabilistic_region_growth'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_index'] = 140
+    p['set_indices'] = range(5000, 5024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [300] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['desc'] = '400ms stim + 300ms answer, centered probabilistic revelation'
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull',
+        'clicktionary',
+        'clicktionary400ms150msfull',
+        'clicktionary400msfull',
+        'clicktionary400msvaranswerfull',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'click_center_probfill',
+        'click_center_probfill_650',
+        'lrp_center_probfill_650']
+    p['cnn_class_file'] = 'classes_exp_1.txt'
+
+def click_center_probfill_400stim_150res(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/clicktionary_centered_probabilistic_region_growth_400stim_150res'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_centered_probabilistic_region_growth'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_index'] = 120
+    p['set_indices'] = range(5000, 5024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [150] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['desc'] = '400 stim + 150 answer, centered probabilistic revelation'
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull',
+        'clicktionary',
+        'clicktionary400ms150msfull',
+        'clicktionary400msfull',
+        'clicktionary400msvaranswerfull',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'click_center_probfill',
+        'click_center_probfill_650',
+        'lrp_center_probfill_650',
+        'fixation_center_probfill_400stim_300res',
+        'lrp_center_probfill_400stim_300res']
+    p['cnn_class_file'] = 'classes_exp_1.txt'
+
+def lrp_center_probfill_400stim_150res(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/lrp_centered_probabilistic_region_growth_400stim_150res'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/lrp_centered_probabilistic_region_growth'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_index'] = 130
+    p['set_indices'] = range(5000, 5024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [150] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['desc'] = '400ms stim + 150ms answer, lrp probabilistic revelation'
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull',
+        'clicktionary',
+        'clicktionary400ms150msfull',
+        'clicktionary400msfull',
+        'clicktionary400msvaranswerfull',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'click_center_probfill',
+        'click_center_probfill_650',
+        'lrp_center_probfill_650',
+        'lrp_center_probfill_400stim_300res',
+        'fixation_center_probfill_400stim_300res',
+        'click_center_probfill_400stim_150res']
+    p['cnn_class_file'] = 'classes_exp_1.txt'
+
+def fixation_center_probfill_400stim_150res(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/fixation_centered_probabilistic_region_growth_400stim_150res'
+    p['input_image_path'] = '/media/data_cifs/clicktionary/causal_experiment/fixation_centered_probabilistic_region_growth'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'clicktionary'
+    p['set_index'] = 140
+    p['set_indices'] = range(5000, 5024)
+    p['exp']['answer_strings'] = ['animal', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains an <emph>animal</emph> (dog, cat, fish, etc.) or a <emph>vehicle</emph> (airplane, truck, car, boat, etc.).'
+    p['identifiers']['class1'] = 'animal'
+    p['identifiers']['Class1'] = 'Animal'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Animal or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether a scrambled image contains an animal or a vehicle'
+    p['exp']['presentation_duration'] = 400
+    p['exp']['num_blocks'] = 5
+    p['exp']['max_answer_times'] = [150] * p['exp']['num_blocks']
+    p['exp']['pretraining'] = 0
+    p['log_scale_revelations'] = True
+    p['invert_revelations'] = False
+    p['desc'] = '400ms stim + 150ms answer, centered probabilistic revelation'
+    p['exclude_participants'] = [
+        'clicklog400ms150msfull',
+        'clicktionary',
+        'clicktionary400ms150msfull',
+        'clicktionary400msfull',
+        'clicktionary400msvaranswerfull',
+        'clicktionary50ms',
+        'clicktionary50msfull',
+        'click_center_probfill',
+        'click_center_probfill_650',
+        'lrp_center_probfill_650',
+        'fixation_center_probfill_400stim_300res',
+        'click_center_probfill_400stim_150res',
+        'lrp_center_probfill_400stim_150res'
+        ]
+    p['cnn_class_file'] = 'classes_exp_1.txt'
+
+
