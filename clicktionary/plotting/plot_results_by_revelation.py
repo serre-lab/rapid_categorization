@@ -81,10 +81,19 @@ def get_human_results_by_revaluation(
         off=0.0,
         is_inverted_rev=True,
         log_scale=False,
-        exclude_workerids=None):
+        exclude_workerids=None,
+        data_filter='full_median'):
     data = Data()
     data.load(experiment_run=experiment_run, exclude_workerids=exclude_workerids)
-    revs, scores = data.get_summary_by_revelation(filename_filter=filename_filter)
+    if 'full_median' in data_filter:
+        subject_filter = np.where(np.asarray(data.full_accuracies) < .5)[0]
+        print 'Removing %s subjects with accuracy less than 50%% on full images' % len(subject_filter)
+    else:
+        subject_filter = None
+
+    revs, scores = data.get_summary_by_revelation(
+        filename_filter=filename_filter,
+        subject_filter=subject_filter)
     return combine_revs_and_scores(revs, scores, off=off, is_inverted_rev=is_inverted_rev, is_log_scale=log_scale)
 
 
@@ -99,27 +108,33 @@ def do_plot(
         fit_line='linear',
         ci=66.6,
         plot_chance=0.5,
-        order=1,
+        order=2,
         x_jitter=0.1):
     df = pd.DataFrame(data, columns=['Revelation', 'correctness'])
     # df = df[df['Revelation'] > 0]
 
     # Interpret fit from fit_line
+    plot_params = {
+        'label' : label,
+        'x_jitter' : x_jitter,
+        'x_estimator' : estimator,
+        'n_boot' : 200,
+        'ci' : ci,
+        'color' : clr,
+        'truncate' : True,
+        'ci' : ci
+        }
     if 'linear' in fit_line:
-        logistic=False
-        fit_line=True
+        plot_params['logistic'] = False
+        plot_params['fit_reg'] = True
+        plot_params['order'] = order
     elif 'logistic' in fit_line:
-        logistic=True
-        fit_line=True
-        order=0
+        plot_params['logistic'] = True
     else:
-        logistic=False
-        fit_line=False
-        
-    ax = sns.regplot(
-        data=df, x='Revelation', y='correctness', ci=ci, n_boot=200,
-        x_estimator=estimator, color=clr, truncate=True, fit_reg=fit_line,
-        order=order, logistic=logistic, label=label, x_jitter=x_jitter) # , logistic=False
+        plot_params['logistic'] = False
+        plot_params['fit_reg'] = False
+    
+    ax = sns.regplot(data=df, x='Revelation', y='correctness', **plot_params)
     if full_size in data:
         full_size_df = df[df['Revelation'] == full_size]
         if max_val is not None:
@@ -191,7 +206,7 @@ def plot_results_by_revaluation_by_class(
         is_inverted_rev=False,
         ci=66.6,
         colorpallete='Set2',
-        fit_line=True):
+        fit_line='linear'):
     p = get_settings(experiment_run)
     set_index = p['set_index']
 
@@ -282,7 +297,8 @@ def plot_results_by_revelation(
         cnn_colorpallete='Set1',
         human_labels=None,
         cnn_labels='VGG16 performance on clicktionary maps',
-        cnn_index=None):
+        cnn_index=None,
+        ci=95):
     sns.set_style('white')
     if isinstance(experiment_run, list):
         # colors = sns.color_palette('Set1', len(experiment_run))
@@ -302,8 +318,14 @@ def plot_results_by_revelation(
                 title = 'Human image time: %s | response time: %s' % (exp_params[0], exp_params[1])
             else:
                 title = human_labels[idx]
-            import ipdb;ipdb.set_trace()
-            do_plot(data_human, color, title, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fl)
+            do_plot(
+                data_human,
+                color,
+                title,
+                log_scale=p['log_scale_revelations'],
+                max_val=200,
+                fit_line=fl,
+                ci=ci)
         plt.title('Accuracy by log-spaced image feature revelation\n')
         experiment_run = '_'.join(experiment_run)
         human_means = []
@@ -331,12 +353,26 @@ def plot_results_by_revelation(
             data_cnn = get_cnn_results_by_revelation(si, filter_class_file=filter_class_file)
             if p['log_scale_revelations']:
                 data_cnn = apply_log_scale(data_human, data_cnn)
-            cnn_means += [do_plot(data_cnn, color, lab, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)]
+            cnn_means += [do_plot(
+                data_cnn,
+                color,
+                lab,
+                log_scale=p['log_scale_revelations'],
+                max_val=200,
+                fit_line=fit_line,
+                ci=ci)]
     else:
         data_cnn = get_cnn_results_by_revelation(set_index, filter_class_file=filter_class_file)
         if p['log_scale_revelations']:
             data_cnn = apply_log_scale(data_human, data_cnn)
-        cnn_means = do_plot(data_cnn, '#91bfdb', cnn_labels, log_scale=p['log_scale_revelations'], max_val=200, fit_line=fit_line)
+        cnn_means = do_plot(
+            data_cnn,
+            '#91bfdb',
+            cnn_labels,
+            log_scale=p['log_scale_revelations'],
+            max_val=200,
+            fit_line=fit_line,
+            ci=ci)
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.png' % experiment_run))
     plt.savefig(os.path.join(config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
@@ -404,12 +440,40 @@ if __name__ == '__main__':
     #     colors=['#fc8d59', '#91bfdb'])
     # plt.show()
 
+
+    # plot_results_by_revaluation_by_class(
+    #     experiment_run='click_center_probfill_400stim_150res_combined',
+    #     exclude_workerids=['A25YG9M911WA3T'],
+    #     class_file='classes_exp_1.txt',
+    #     ci=66.6,
+    #     fit_line='')  # 'all_classes_exp_1.txt'
+    # plt.show()
+
     human_means, cnn_means = plot_results_by_revelation(
-        experiment_run=['click_center_probfill_400stim_150res', 'lrp_center_probfill_400stim_150res'],  # ['click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],  # 'click_center_probfill_400stim_150res'],  # 'lrp_center_probfill_650'],  # , 'fixation_center_probfill_400stim_300res'],
+        experiment_run=['click_center_probfill_400stim_150res_combined'],
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
-        fit_line=['logistic', 'linear'],  # ['linear','logistic'],
+        fit_line=['', ''],  # ['linear','logistic'],
         cnn_index=[120, 130],  # [120, 130, 140],
         human_labels=[
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
+            ],
+        cnn_labels=[
+            'VGG16 performance: Clicktionary centered probabilistic.',
+            'VGG16 performance: VGG16 LRP centered probabilistic.',
+            ],)
+    plt.show()
+
+
+
+
+    human_means, cnn_means = plot_results_by_revelation(
+        experiment_run=['click_center_probfill_400stim_150res', 'click_center_probfill_400stim_150res_2', 'click_center_probfill_400stim_150res_3'],  # ['click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],  # 'click_center_probfill_400stim_150res'],  # 'lrp_center_probfill_650'],  # , 'fixation_center_probfill_400stim_300res'],
+        exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
+        fit_line=['', ''],  # ['linear','logistic'],
+        cnn_index=[120, 130],  # [120, 130, 140],
+        human_labels=[
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
             'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
             'Human performance: VGG16 LRP centered probabilistic; 400ms stim, 150ms response.'
             ],
@@ -423,7 +487,7 @@ if __name__ == '__main__':
     human_means, cnn_means = plot_results_by_revelation(
         experiment_run=['click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
-        fit_line=['logistic', 'linear'], # ['linear','logistic'],
+        fit_line=['', ''], # ['linear','logistic'],
         cnn_index=[120, 130],  # [120, 130, 140],
         human_labels=[
             'Human performance: Clicktionary centered probabilistic; 400ms stim, 300ms response.',
@@ -439,7 +503,7 @@ if __name__ == '__main__':
     human_means, cnn_means = plot_results_by_revelation(
         experiment_run=['click_center_probfill_400stim_150res', 'lrp_center_probfill_400stim_150res', 'click_center_probfill_400stim_300res', 'lrp_center_probfill_400stim_300res'],
         exclude_workerids=['A25YG9M911WA3T'],  # In cases like when participants inexplicably are able to complete the experiment twice
-        fit_line=['logistic', 'linear', 'logistic', 'linear'],  # ['linear','logistic', 'linear','logistic'],
+        fit_line=['', '', '', ''],  # ['linear','logistic', 'linear','logistic'],
         cnn_index=[120, 130],  # [120, 130, 140],
         human_labels=[
             'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
@@ -455,11 +519,3 @@ if __name__ == '__main__':
     plt.show()
 
 
-    # plot_results_by_revaluation_by_class(
-    #     experiment_run='click_center_probfill_650',
-    #     exclude_workerids=['A25YG9M911WA3T'],
-    #     class_file='classes_exp_1.txt',
-    #     ci=66.6,
-    #     fit_line=False)  # 'all_classes_exp_1.txt'
-    # plt.show()
-    #TODO find MIRCs by np.argmax(diff( .5 + human_means))
