@@ -19,7 +19,8 @@ def generate_stimulus_videos(image_folder, video_folder, onset_times_ms, after_t
     root_path = os.path.dirname(os.path.realpath(__file__))
     mkfixframes_sh = os.path.join(root_path, 'mkfixframes.sh')
     work_path = os.path.join(root_path, 'tmp')
-    shutil.rmtree(work_path)
+    if os.path.exists(work_path):
+        shutil.rmtree(work_path)
     subprocess.call(mkfixframes_sh)
     # Determine conversion script name
     stim_sh = os.path.join(root_path, 'stim2video.sh')

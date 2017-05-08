@@ -12,13 +12,10 @@ class Data:
     def load_participant_json(self, experiment_run, verbose=True):
         exp_filename = util.get_experiment_db_filename_by_run(experiment_run)
         assert(os.path.isfile(exp_filename))
-        con = sqlite3.connect(exp_filename)
-        cur = con.cursor()
-        r = sqlite3.connect(exp_filename).cursor().execute(
-            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in %s AND NOT datastring==''" % (self.statuses,)).fetchall()
-        data = cur.fetchall()
+        data = sqlite3.connect(exp_filename).cursor().execute(
+            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in %s AND NOT datastring==''" % (
+                self.statuses,)).fetchall()
         if verbose: print "%d participants found in file %s." % (len(data), exp_filename)
-        con.close()
         return data
 
     def load_participant_ids(self, experiment_run):

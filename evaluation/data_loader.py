@@ -20,6 +20,7 @@ class Data:
         self.im2path = {}  # maps image filename to containing folder
         self.animal_ind = 0
         self.nonanimal_ind = 0
+        self.timeout_threshold = 20
         self.trials_by_img = {}  # trial data indexed by image
         self.data_by_img = {}  # result data averaged over trials by image
         self.acc_by_im = {}
@@ -32,7 +33,8 @@ class Data:
         self.min_rt_subj['nonanimal'] = {}
         self.min_rt_subj['animal_wrong'] = {}
         self.min_rt_subj['nonanimal_wrong'] = {}
-        self.im_by_subj= {}
+        self.im_by_subj = {}
+        self.sub_timeouts = {}
         self.max_answer_times = set()
         # Track failure rates
         # rt hists by max_rt
@@ -51,7 +53,10 @@ class Data:
         self.correct_rts = []
         self.workerIds = []
         self.statuses = (3, 4, 5, 7)  # See https://github.com/NYUCCL/psiTurk/blob/master/psiturk/experiment.py
-        self.full_accuracies = []
+        self.full_accuracies = {}
+        self.response_log = {}
+        self.force_remove_duplicate_workers = True
+        self.worker_list = []
 
     def load(self, experiment_run, exclude_workerids=['']):
         p = get_settings(experiment_run)
@@ -141,7 +146,6 @@ class Data:
 
     def load_subject(self, data):
         i_subj = self.n_subjects
-        self.n_subjects += 1
         self.im_by_subj[i_subj] = {}
         # Get experimental trials.
         alltrials = data['data']
@@ -155,69 +159,81 @@ class Data:
         self.min_rt_subj['nonanimal'][i_subj] = []
         self.min_rt_subj['animal_wrong'][i_subj] = []
         self.min_rt_subj['nonanimal_wrong'][i_subj] = []
-
-        t_array = []
-        # Organize trials per-image
-        count = 0
-        for t in trials:
-            self.n_trials += 1
+        if self.force_remove_duplicate_workers and data['workerId'] in self.worker_list:
+            print 'Removing duplicate instance of worker %s' % data['workerId']
+        else:
+            self.worker_list.append(data['workerId'])
+            t_array = []
+            # Organize trials per-image
+            count = 0
+            sub_timeout = 0
             try:
-                stim = json.loads(t["stimulus"])
-                if 'examples' in stim["stimulus"]: # Example video not used in evaluation
-                    continue
-                max_answer_time = stim['duration'] - stim['onset']
-                t['max_answer_time'] = max_answer_time
-                self.max_answer_times.add(max_answer_time)
-                # recover max_rt and im num in block
-                max_rt = stim["duration"] - stim["onset"] - 50
-                im_in_block = count % (len(trials) / 6)
-                t['max_rt'] = max_rt
-                t['im_in_block'] = im_in_block
-                img = '/'.join(stim["stimulus"].split('/')[3:-1])
-                t['cat'] = img
-                # Get score 1/0 for true/wrong answer for accumulating accuracies
-                if t['response'] == t['true_response']:
-                    t['score'] = 1.0
-                    if t['rt'] > 0:
-                        self.min_rt_subj[self.im2lab[img]][i_subj].append(t['rt'])
-                        self.correct_rts.append(t['rt'])
-                else:
-                    t['score'] = 0.0
-                    if t['rt'] > 0:
-                        self.min_rt_subj[self.im2lab[img] + '_wrong'][i_subj].append(t['rt'])
+                for t in trials:
+                    self.n_trials += 1
+                    stim = json.loads(t["stimulus"])
+                    if 'examples' in stim["stimulus"]: # Example video not used in evaluation
+                        continue
+                    max_answer_time = stim['duration'] - stim['onset']
+                    t['max_answer_time'] = max_answer_time
+                    self.max_answer_times.add(max_answer_time)
+                    # recover max_rt and im num in block
+                    max_rt = stim["duration"] - stim["onset"] - 50
+                    im_in_block = count % (len(trials) / 6)
+                    t['max_rt'] = max_rt
+                    t['im_in_block'] = im_in_block
+                    img = '/'.join(stim["stimulus"].split('/')[3:-1])
+                    t['cat'] = img
+                    # Get score 1/0 for true/wrong answer for accumulating accuracies
+                    if t['response'] == t['true_response']:
+                        t['score'] = 1.0
+                        if t['rt'] > 0:
+                            self.min_rt_subj[self.im2lab[img]][i_subj].append(t['rt'])
+                            self.correct_rts.append(t['rt'])
+                    else:
+                        t['score'] = 0.0
+                        if t['rt'] > 0:
+                            self.min_rt_subj[self.im2lab[img] + '_wrong'][i_subj].append(t['rt'])
 
-                self.im_by_subj[i_subj][img] = t['score']
-                is_timeout = (t['rt'] < 0)
-                if is_timeout:
-                    self.n_timeouts += 1
-                if (not is_timeout) or (not self.ignore_timeouts):
+                    self.im_by_subj[i_subj][img] = t['score']
+                    is_timeout = (t['rt'] < self.timeout_threshold)
                     if is_timeout:
-                        t['cscore'] = 0.5
-                    else:
-                        t['cscore'] = t['score']
-                    if img in self.trials_by_img:
-                        self.trials_by_img[img] += [t]
-                    else:
-                        self.trials_by_img[img] = [t]
-                    if t['rt'] > 0:
-                        self.total_acc.append(t['score'])
-                        self.total_time.append(t['rt'])
-                    # Store per image data
-                    if img not in self.acc_by_im.keys():
-                        self.acc_by_im[img] = []
-                        self.acc_by_im_subjects[img] = []
-                        self.acc_by_im_and_max_answer_time[img] = {}
-                    self.acc_by_im[img].append(t['score'])
-                    self.acc_by_im_subjects[img].append(i_subj)
-                    if max_answer_time not in self.acc_by_im_and_max_answer_time[img]:
-                        self.acc_by_im_and_max_answer_time[img][max_answer_time] = []
-                    self.acc_by_im_and_max_answer_time[img][max_answer_time].append(t['score'])
-                t_array.append(t)
+                        self.n_timeouts += 1
+                        sub_timeout += 1
+                    if (not is_timeout) or (not self.ignore_timeouts):
+                        if is_timeout:
+                            t['cscore'] = 0.5
+                            print 'here'
+                        else:
+                            t['cscore'] = t['score']
+                        if img in self.trials_by_img:
+                            self.trials_by_img[img] += [t]
+                        else:
+                            self.trials_by_img[img] = [t]
+                        if t['rt'] > 0:
+                            self.total_acc.append(t['score'])
+                            self.total_time.append(t['rt'])
+                        # Store per image data
+                        if img not in self.acc_by_im.keys():
+                            self.acc_by_im[img] = []
+                            self.acc_by_im_subjects[img] = []
+                            self.acc_by_im_and_max_answer_time[img] = {}
+                        t_array.append(t)
+                        self.acc_by_im[img].append(t['score'])
+                        self.acc_by_im_subjects[img].append(i_subj)
+                        if max_answer_time not in self.acc_by_im_and_max_answer_time[img]:
+                            self.acc_by_im_and_max_answer_time[img][max_answer_time] = []
+                        self.acc_by_im_and_max_answer_time[img][max_answer_time].append(t['score'])
+                    count += 1
+                self.full_accuracies[i_subj] = (np.mean(
+                    [r['score']
+                        for r in t_array if r['cat'].split('/')[0] == 'full']))
+                self.response_log[i_subj] = [r['key_press'] for r in t_array]
+                self.n_subjects += 1
+                self.sub_timeouts[i_subj] = sub_timeout
+                assert len(self.full_accuracies.keys()) == self.n_subjects
             except:
                 print 'Fucked up on trial: %s for participant" %s' % (
                     count, data['workerId'],)
-            count += 1
-        self.full_accuracies.append(np.mean([r['score'] for r in t_array if r['cat'].split('/')[0] == 'full']))
 
     def get_image_names(self, im):
         rev, base_im = im.split('/')
@@ -226,24 +242,39 @@ class Data:
         base_im_name = re.findall('[a-zA-Z_]*', base_im)[0]
         return rev, base_im, base_im_name
 
+    def create_image_label(self, im, num_subjects):
+        vals = 0
+        for x, modifier in zip(re.findall('\d+', im), 1 + np.arange(len(re.findall('\d+', im)))):
+            vals += int(x) * modifier
+        return list(np.repeat(vals, num_subjects))
+
     def get_summary_by_revelation(self, filename_filter=None, subject_filter=None):
         rev_scores = defaultdict(list)
+        rev_subs = defaultdict(list)
+        rev_ims = defaultdict(list)
         for (im, scores), (im_check, subjects) in zip(
                 self.acc_by_im.iteritems(), self.acc_by_im_subjects.iteritems()):
             rev, base_im, base_im_name = self.get_image_names(im)
             _, _, base_im_name_check = self.get_image_names(im_check)
             assert base_im_name == base_im_name_check
+            assert len(scores) == len(subjects)
             if filename_filter is not None:
                 if base_im_name not in filename_filter:
                     continue
             if subject_filter is not None:
                 filt_scores = [sc for sc, su in zip(
-                    scores, subjects) if su not in subject_filter]
+                    scores, subjects) if su in subject_filter]
+                filt_subs = [su for su in subjects if su in subject_filter]
                 scores = filt_scores
+                subjects = filt_subs
             rev_scores[int(rev)] += scores
+            rev_subs[int(rev)] += subjects
+            rev_ims[int(rev)] += [im] * len(scores) # self.create_image_label(im, len(scores))
         revs = sorted(rev_scores.keys())
         all_scores = [rev_scores[irev] for irev in revs]
-        return revs, all_scores
+        all_subjects = [rev_subs[irev] for irev in revs]
+        all_ims = [rev_ims[irev] for irev in revs]
+        return revs, all_scores, all_subjects, all_ims
 
     def get_summary_by_revelation_and_max_answer_time(self, max_answer_time, filename_filter=None):
         rev_scores = defaultdict(list)

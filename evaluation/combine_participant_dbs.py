@@ -40,7 +40,8 @@ class merger:
         self.db_con.execute("BEGIN")
         for row in self.db_con.execute(
                 "SELECT * FROM dba.sqlite_master WHERE type='table'"):
-            combine = "INSERT INTO %s SELECT * FROM dba.%s" % (row[1], row[1])
+            combine = "INSERT OR IGNORE INTO %s SELECT * FROM dba.%s" % (
+                row[1], row[1])
             self.db_con.execute(combine)
         self.output_db.commit()
         self.db_con.execute("detach database dba")
@@ -72,6 +73,15 @@ if __name__ == '__main__':
             'click_center_probfill_400stim_150res',
             'click_center_probfill_400stim_150res_2',
             'click_center_probfill_400stim_150res_3',
-            'click_center_probfill_400stim_150res_4'
+            'click_center_probfill_400stim_150res_4',
+            'click_center_probfill_400stim_150res_5'
             ],
         output_name='click_center_probfill_400stim_150res_combined')
+
+
+
+        # dbs=[
+        #     'lrp_center_probfill_400stim_150res',
+        #     'lrp_center_probfill_400stim_150res_2'
+        #     ],
+        # output_name='lrp_center_probfill_400stim_150res_combined')

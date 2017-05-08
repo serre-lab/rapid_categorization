@@ -25,6 +25,9 @@ def print_participant_count(experiment_wildcard):
     print '  %d experiments' % n_experiments_with_subjects
     print '  %d participants' % len(all_ids)
     print '  %d unique participants' % len(unique_ids)
+    if len(unique_ids):
+        print 'Duplicates ids: %s' % [item for item in set(all_ids) if all_ids.count(item) > 1]
+
 
 if __name__ == '__main__':
-    print_participant_count('click*')
+    print_participant_count('click_center_probfill_400stim_150res_combined')
