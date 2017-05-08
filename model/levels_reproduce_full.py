@@ -79,10 +79,7 @@ def extract_layers(model_name, feature_name, random_sample_ident, set_name, batc
             print 'Extraction: Skipping set %d at %s' % (i, output_file)
             continue
         print 'Extracting from set %d to %s...' % (i, output_file)
-        if feature_name == 'gist':
-            ext_samp = do_gist(input_file, output_file)
-        else:
-            ext_samp = ext_caffe_direct(input_root, input_file, output_file, model_name, feature_name, random_sample_ident, rand_samp, batch_size, gpu_idx=gpu_idx, set_name=set_name)
+        ext_samp = ext_caffe_direct(input_root, input_file, output_file, model_name, feature_name, random_sample_ident, rand_samp, batch_size, gpu_idx=gpu_idx, set_name=set_name)
         if rand_samp is None: rand_samp = ext_samp
 
 
@@ -117,7 +114,13 @@ if __name__ == '__main__':
     # Set SVM parameters
     should_opt = False
     opt_params = {}
-    opt_params['set_name'] = 'set'
+    # opt_params['set_name'] = 'dist_vehicles_50'
+    # opt_params['set_name'] = 'dist_vehicles_25'
+    # opt_params['set_name'] = 'struct_vehicles_25'
+    # opt_params['set_name'] = 'artifact_vehicles'
+    opt_params['set_name'] = 'artifact_dist_vehicle_target' #<<<<---
+    # opt_params['set_name'] = 'artifact_sport_vehicles'
+    # opt_params['set_name'] = 'artifact_vehicles_human_test' # <<<<---
     opt_params['cvals'] = range(-5,-2)
     opt_params['model_name'] = 'VGG16'
     opt_params['feature_name'] = 'fc7ex'
@@ -140,3 +143,14 @@ if __name__ == '__main__':
         'clicktionary',
         imset, do_norm=True,
         force_overwrite=False)
+
+
+    # Lines for Michele to run
+    # feature_names_for_VGG16 = ['conv1_1ex', 'conv1_2ex', 'conv2_1ex', 'conv2_2ex', 'conv3_1ex', 'conv3_2ex', 'conv3_3ex', 'conv4_1ex', 'conv4_2ex', 'conv4_3ex', 'conv5_1ex', 'conv5_2ex', 'conv5_3ex', 'fc6ex','fc7ex']
+    # for feat_name in feature_names_for_VGG16:
+    #     opt_params['feature_name'] = feat_name
+    #     # build_classifiers(opt_params, batch_size, [], extract_trainset, best_C=None, random_sample_ident=random_sample_ident, force_overwrite=False)
+    # # imset = [70]#1603241729
+    #     range_batches = range(16)
+    #     extract_layers(opt_params['model_name'], opt_params['feature_name'], random_sample_ident=random_sample_ident, set_name='artifact_vehicles_turk', batches=range_batches, batch_size=batch_size, gpu_idx=0, force_overwrite=False)
+    #     extract_predictions(opt_params, 'artifact_vehicles_turk', range_batches, do_norm=True, force_overwrite=False)

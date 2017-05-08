@@ -3,13 +3,13 @@
 from rapid_categorization.model import util
 import numpy as np
 import matplotlib.pyplot as plt
-import data_loader
+from data_loader import Data # import data_loader # Changed this from Jonah script [changed line 1 of 2]
 
 def mid_mod_ims(data, model_name, num, classifier_type, train_batches, set_index, set_name):
     n_layers = 15
     # Calculate stats per image for sample populataion
     model_comp = {} # data for model comparison
-    im2lab = data.im2lab
+    im2lab = Data.im2lab # im2lab = data.im2lab # Changed this from Jonah script [changed line 2 of 2] ***Check 'data' in mid_mod_ims
     im2key = {} # maps image to index in model comp array
     im2key_ana = {}
     animal_ind = 0

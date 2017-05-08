@@ -28,6 +28,7 @@ def ext_caffe_direct(
         caffe.set_device(gpu_idx)
     rand_subset = rand_samp
     model_file = util.get_model_filename(model_name, feature_name)
+    print model_file
     mean_file = util.get_mean_filename(model_name)
     crop_size = util.get_crop_size(model_name)
     weights_file = util.get_weights_filename(model_name)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from rapid_categorization.model import util
 import numpy as np
 import matplotlib.pyplot as plt
 import data_loader

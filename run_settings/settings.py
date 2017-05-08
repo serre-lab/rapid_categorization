@@ -901,3 +901,29 @@ def click_center_probfill_400stim_150res_5(p):
     ]
     p['cnn_class_file'] = 'classes_exp_1.txt'
 
+# TURK experiment by Michele and Charlie 2017 May
+def artifact_vehicles_turk(p):
+    base_settings(p)
+    p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/artifact_vehicles_turk_50ms'
+    p['input_image_path'] = '/media/data_cifs/nsf_levels/michele/entire_sets/artifact_testing_set_for_humans/artifact_testing_set/'
+    # p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['set_name'] = 'artifact_vehicles_turk'
+    p['set_index'] = 0
+    p['set_indices'] = [0]
+    p['exp']['answer_strings'] = ['non_vehicle', 'vehicle']
+    p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains a <emph>vehicle</emph> (airplane, truck, car, boat, bicycle, etc.) or <emph>does not contain a vehicle</emph> (building, clothing, electronic device, etc.).'
+    p['identifiers']['class1'] = 'non_vehicle'
+    p['identifiers']['Class1'] = 'Non_vehicle'
+    p['identifiers']['class2'] = 'vehicle'
+    p['identifiers']['Class2'] = 'Vehicle'
+    p['config']['HIT Configuration']['title'] = 'Non Vehicle or Vehicle?'
+    p['config']['HIT Configuration']['description'] = 'Categorize whether an image contains a vehicle or does not contain a vehicle.'
+    p['exp']['presentation_duration'] = 50 # ms
+    p['exp']['num_blocks'] = 6
+    p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
+    # p['exp']['pretraining'] = 0
+    # p['log_scale_revelations'] = True
+    # p['invert_revelations'] = False
+    # p['desc'] = '400 stim + 150 answer, centered probabilistic revelation'
+    p['exclude_participants'] = []
+    # p['cnn_class_file'] = 'classes_exp_1.txt'

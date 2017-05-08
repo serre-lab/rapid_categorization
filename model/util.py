@@ -27,6 +27,16 @@ elif hostname == 'x9':
     plot_path = '/media/data_cifs/nsf_levels/plots'
     base_path = '/media/data_cifs/nsf_levels/'
     log_path = '/media/data_cifs/nsf_levels/log'
+elif hostname == 'g17':
+    # michele's machine
+    imageset_base_path = '/media/data_cifs/nsf_levels/michele/'
+    base_path = '/media/storage/michele_storage/nsf_rapid_categorization/'
+    log_path = '/media/storage/michele_storage/nsf_rapid_categorization/log'
+    # # while /media/storage does not work *****
+    # base_path = '/media/data_cifs/nsf_levels/michele/nsf_rapid_categorization/'
+    # log_path = '/media/data_cifs/nsf_levels/michele/nsf_rapid_categorization/log'
+    experiment_path = '/media/data_cifs/nsf_levels/michele/Results'
+    plot_path = '/media/data_cifs/nsf_levels/michele/plots'
 elif hostname.beginswith('gpu'):
     # CCV
     imageset_base_path = '/users/seberhar/data/data/AnNonAnNIPS'
@@ -90,8 +100,24 @@ def get_imageset_filename(set_index, set_name):
         input_file = at_imageset_base_path('TURK_IMS/set1603241729_%d.txt' % set_index)
     elif set_name == 'clicktionary':
         input_file = os.path.join(clicktionary_imageset_path, 'images_%d.txt' % set_index)
-    else:
+    elif set_name == 'vehicles':
+        input_file = at_imageset_base_path('geo_veh_training_sets_for_CNN/trainset_%s.txt' % set_index)
+    elif set_name == 'dist_vehicles_50':
+        input_file = at_imageset_base_path('dist_veh_50_training_set_for_CNN/trainset_%s.txt' % set_index)
+    elif set_name == 'dist_vehicles_25':
+        input_file = at_imageset_base_path('dist_veh_25_training_set_for_CNN/trainset_%s.txt' % set_index)
+    elif set_name == 'struct_vehicles_25':
+        input_file = at_imageset_base_path('struct_dist_25_training_set_for_CNN/trainset_%s.txt' % set_index)
+    elif set_name == 'artifact_dist_vehicle_target':
+        input_file = at_imageset_base_path('artifact_training_set_for_CNN/trainset_%s.txt' % set_index)
+    elif set_name == 'artifact_sport_vehicles':
+        input_file = at_imageset_base_path('artifact_sport_training_set_for_CNN/trainset_%s.txt' % set_index)
+    elif set_name == 'artifact_vehicles_turk':
+        input_file = at_imageset_base_path('entire_sets/artifact_testing_set_for_humans/testset_%s.txt' % set_index)
+    elif set_name == 'set':
         input_file = at_imageset_base_path('raw_ims/sets/train%s_%d.txt' % (set_name, set_index))
+    else:
+        raise RuntimeError('unknown set %s' % set_name)
     return input_file
 
 def get_imageset_filename_raw(set_index, set_name):
@@ -99,6 +125,20 @@ def get_imageset_filename_raw(set_index, set_name):
         input_file = at_imageset_base_path('TURK_IMS/raw_%s%d_0.txt' % (set_name, set_index))
     elif set_name == 'clicktionary':
         input_file = os.path.join(clicktionary_imageset_path, 'raw_images_%d.txt' % set_index)
+    elif set_name == 'vehicles':
+        input_file = at_imageset_base_path('geo_veh_training_sets_for_CNN/raw_trainset_%s.txt' % set_index)
+    elif set_name == 'dist_vehicles_50':
+        input_file = at_imageset_base_path('dist_veh_50_training_set_for_CNN/raw_trainset_%s.txt' % set_index)
+    elif set_name == 'dist_vehicles_25':
+        input_file = at_imageset_base_path('dist_veh_25_training_set_for_CNN/raw_trainset_%s.txt' % set_index)
+    elif set_name == 'struct_vehicles_25':
+        input_file = at_imageset_base_path('struct_dist_25_training_set_for_CNN/raw_trainset_%s.txt' % set_index)
+    elif set_name == 'artifact_dist_vehicle_target':
+        input_file = at_imageset_base_path('artifact_training_set_for_CNN/raw_trainset_%s.txt' % set_index)
+    elif set_name == 'artifact_sport_vehicles':
+        input_file = at_imageset_base_path('artifact_sport_training_set_for_CNN/raw_trainset_%s.txt' % set_index)
+    elif set_name == 'artifact_vehicles_turk':
+        input_file = at_imageset_base_path('entire_sets/artifact_testing_set_for_humans/raw_testset_%s.txt' % set_index)
     else:
         input_file = at_imageset_base_path('raw_ims/sets/raw_train%s_%d.txt' % (set_name, set_index))
     return input_file
@@ -106,6 +146,20 @@ def get_imageset_filename_raw(set_index, set_name):
 def get_input_image_root(set_index, set_name):
     if set_name == 'turk':
         return at_imageset_base_path('TURK_IMS/set1603241729_%d' % set_index)
+    elif set_name == 'vehicles':
+        return at_imageset_base_path('geo_veh_training_sets_for_CNN/training_images_for_CNN/')
+    elif set_name == 'dist_vehicles_50':
+        return at_imageset_base_path('dist_veh_50_training_set_for_CNN/50_percent_entire_set/')
+    elif set_name == 'dist_vehicles_25':
+        return at_imageset_base_path('dist_veh_25_training_set_for_CNN/25_percent_entire_set/')
+    elif set_name == 'struct_vehicles_25':
+        return at_imageset_base_path('struct_dist_25_training_set_for_CNN/struct_dist_25_entire_set/')
+    elif set_name == 'artifact_dist_vehicle_target':
+        return at_imageset_base_path('artifact_training_set_for_CNN/artifact_training_set/')
+    elif set_name == 'artifact_sport_vehicles':
+        return at_imageset_base_path('artifact_sport_training_set_for_CNN/artifact_sport_training_set/')
+    elif set_name == 'artifact_vehicles_turk':
+        return at_imageset_base_path('entire_sets/artifact_testing_set_for_humans/artifact_testing_set/')
     else:
         return at_imageset_base_path('TURK_IMS/trainset_bw/')
 
@@ -183,7 +237,9 @@ def get_model_filename(model_name, feature_name):
         return at_model_path('deploy_%s_%s.prototxt' % (model_name, feature_name))
 
 def get_mean_filename(model_name):
-    return '/home/sven2/s2caffe/python/caffe/imagenet/ilsvrc_2012_mean.npy'
+    # THIS WAS CHANGED BY MICHELE TO WORK ON HER COMPUTER AS WELL
+    # return '/home/sven2/s2caffe/python/caffe/imagenet/ilsvrc_2012_mean.npy'
+    return '/media/data_cifs/nsf_levels/ilsvrc_2012_mean.npy'
 
 def get_weights_filename(model_name):
     if model_name == 'AlexNet': return '/home/sven2/s2caffe/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel'

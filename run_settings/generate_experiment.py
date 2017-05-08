@@ -116,5 +116,6 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('click_center_probfill_400stim_150res_5', force_overwrite=True, deploy=True)
-    sync_stimuli()
+    # generate_experiment('click_center_probfill_400stim_150res_5', force_overwrite=True, deploy=True)
+    generate_experiment('artifact_vehicles_turk', force_overwrite=True, deploy=True)
+    # sync_stimuli()

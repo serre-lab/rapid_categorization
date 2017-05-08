@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Load experimental and model data
 import os, sqlite3, json
-from hmax.levels import util
+from rapid_categorization.model import util
 
 
 class Data:
