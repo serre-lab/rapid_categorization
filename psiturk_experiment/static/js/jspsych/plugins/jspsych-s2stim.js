@@ -67,16 +67,25 @@
       var responseKey = -1;
       var responseIndex = -1;
 
-      var keyboardListener;
+      var keyboardListener = undefined;
       var trial_was_timeout = false;
 
       var vid_element, vidsrc_element;
+
+      function cancelKeyboardListener()
+      {
+      	if (keyboardListener !== undefined)
+      	{
+      		jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+			keyboardListener = undefined;
+      	}
+      }
 
       // function to end trial when it is time
       var end_trial = function() {
 
         // kill keyboard listeners
-        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+        cancelKeyboardListener();
 
         // kill any remaining setTimeout handlers
         for (var i = 0; i < setTimeoutHandlers.length; i++) {
@@ -104,7 +113,7 @@
         // clear the display
         display_element.html(trial.base_html);
         // move on to the next trial
-        jsPsych.finishTrial();        
+        jsPsych.finishTrial();
       }
 
       // function to handle responses by the subject
@@ -117,7 +126,7 @@
             break;
           }
         }
-          
+
         responseValid = true;
         responseTime = info.rt;
         responseVideoFrame = vid_element.currentTime * 1000 - trial.stimulus.onset;
@@ -165,6 +174,7 @@
 	// schedule starting the keyboard listener for answer
 	var tc = setTimeout(function() {
 		// start the response listener
+		cancelKeyboardListener();
 		keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
 		  callback_function: after_response,
 		  valid_responses: allchoices,
@@ -196,6 +206,7 @@
         if (trial.timeout_message !== "") {
           display_element.html(trial.base_html);
           display_element.append(trial.timeout_message);
+          cancelKeyboardListener();
           keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
             callback_function: skipTimeoutScreen,
             valid_responses: [],
@@ -214,7 +225,7 @@
       function skipTimeoutScreen()
       {
         // kill keyboard listeners
-        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+        cancelKeyboardListener();
         next_trial();
       }
 

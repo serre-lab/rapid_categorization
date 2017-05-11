@@ -118,4 +118,4 @@ def sync_stimuli():
 if __name__ == '__main__':
     # generate_experiment('click_center_probfill_400stim_150res_5', force_overwrite=True, deploy=True)
     generate_experiment('artifact_vehicles_turk', force_overwrite=True, deploy=True)
-    sync_stimuli()
+    # sync_stimuli()
