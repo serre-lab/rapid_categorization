@@ -5,6 +5,7 @@
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 # Parameter checks
+# For Michele artifact vehicle experiment, use params example pretime 1100 'training_presentation_durations' = [500, 500, 200, 200, 100, 100] 'max_training_answer_time'] = 1500 fps = 100
 if [ $# -lt 6 ]; then
 	echo "Usage: $0 input_image output_video fix_time_ms stim_show_time_ms after_time_ms fps"
 	echo "  e.g.: $0 scene.png scene.webm 1000 20 500 50"

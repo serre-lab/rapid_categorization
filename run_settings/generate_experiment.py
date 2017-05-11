@@ -38,7 +38,7 @@ def write_set_file(set_index, set_name, dst_filename):
     # Load set and convert to CSV
     src_fn = get_imageset_filename(set_index=set_index, set_name=set_name)
     data = open(src_fn, 'rt').read().splitlines()
-    class_identifiers = ['nonanimal', 'animal']
+    class_identifiers = ['distractor', 'target'] # in src_fn, 0 is the distractor; 1 is the tagetg
     with open(dst_filename, 'wt') as fid:
         fid.write('img,cat\n')
         for line in data:
@@ -118,4 +118,4 @@ def sync_stimuli():
 if __name__ == '__main__':
     # generate_experiment('click_center_probfill_400stim_150res_5', force_overwrite=True, deploy=True)
     generate_experiment('artifact_vehicles_turk', force_overwrite=True, deploy=True)
-    # sync_stimuli()
+    sync_stimuli()

@@ -906,14 +906,14 @@ def artifact_vehicles_turk(p):
     base_settings(p)
     p['video_base_path'] = '/media/data_clicktionary/rapid_categorization/artifact_vehicles_turk_50ms'
     p['input_image_path'] = '/media/data_cifs/nsf_levels/michele/entire_sets/artifact_testing_set_for_humans/artifact_testing_set/'
-    # p['example_path'] = '/media/data_clicktionary/rapid_categorization/masked_examples_animal_vehicle'
+    p['example_path'] = '/media/data_clicktionary/rapid_categorization/artifact_vehicles_examples'
     p['set_name'] = 'artifact_vehicles_turk'
     p['set_index'] = 0
     p['set_indices'] = [0]
-    p['exp']['answer_strings'] = ['non_vehicle', 'vehicle']
+    p['exp']['answer_strings'] = ['non vehicle', 'vehicle']
     p['identifiers']['taskexpl'] = 'Your task will be to assess whether the pictured photograph contains a <emph>vehicle</emph> (airplane, truck, car, boat, bicycle, etc.) or <emph>does not contain a vehicle</emph> (building, clothing, electronic device, etc.).'
-    p['identifiers']['class1'] = 'non_vehicle'
-    p['identifiers']['Class1'] = 'Non_vehicle'
+    p['identifiers']['class1'] = 'non vehicle'
+    p['identifiers']['Class1'] = 'Non vehicle'
     p['identifiers']['class2'] = 'vehicle'
     p['identifiers']['Class2'] = 'Vehicle'
     p['config']['HIT Configuration']['title'] = 'Non Vehicle or Vehicle?'
@@ -921,6 +921,7 @@ def artifact_vehicles_turk(p):
     p['exp']['presentation_duration'] = 50 # ms
     p['exp']['num_blocks'] = 6
     p['exp']['max_answer_times'] = [500] * p['exp']['num_blocks']
+    p['exp']['imagelist_identifiers'] = ['distractor', 'target']  # Identifiers used in csv file
     # p['exp']['pretraining'] = 0
     # p['log_scale_revelations'] = True
     # p['invert_revelations'] = False
