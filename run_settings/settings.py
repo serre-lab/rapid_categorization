@@ -916,7 +916,10 @@ def artifact_vehicles_turk(p):
     p['identifiers']['Class1'] = 'Non vehicle'
     p['identifiers']['class2'] = 'vehicle'
     p['identifiers']['Class2'] = 'Vehicle'
-    p['config']['HIT Configuration']['title'] = 'Vehicle or Not?'
+    p['identifiers']['pay_amt'] = '2.00'
+    p['identifiers']['exp_length'] = 22 # in minutes
+    p['identifiers']['exp_title'] = 'Vehicle or Not?'
+    p['config']['HIT Configuration']['title'] = p['identifiers']['exp_title']
     p['config']['HIT Configuration']['description'] = 'Categorize whether an image contains a vehicle or does not contain a vehicle.'
     p['exp']['presentation_duration'] = 50 # ms
     p['exp']['num_blocks'] = 6
