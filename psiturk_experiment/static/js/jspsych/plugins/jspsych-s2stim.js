@@ -72,12 +72,11 @@
 
       var vid_element, vidsrc_element;
 
-
       // function to end trial when it is time
       var end_trial = function() {
 
         // kill keyboard listeners
-        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener)
 
         // kill any remaining setTimeout handlers
         for (var i = 0; i < setTimeoutHandlers.length; i++) {
@@ -166,7 +165,6 @@
 	// schedule starting the keyboard listener for answer
 	var tc = setTimeout(function() {
 		// start the response listener
-		cancelKeyboardListener();
 		keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
 		  callback_function: after_response,
 		  valid_responses: allchoices,
@@ -198,7 +196,6 @@
         if (trial.timeout_message !== "") {
           display_element.html(trial.base_html);
           display_element.append(trial.timeout_message);
-          cancelKeyboardListener();
           keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
             callback_function: skipTimeoutScreen,
             valid_responses: [],
@@ -217,7 +214,7 @@
       function skipTimeoutScreen()
       {
         // kill keyboard listeners
-        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener)
         next_trial();
       }
 

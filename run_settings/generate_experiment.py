@@ -38,7 +38,7 @@ def write_set_file(set_index, set_name, dst_filename):
     # Load set and convert to CSV
     src_fn = get_imageset_filename(set_index=set_index, set_name=set_name)
     data = open(src_fn, 'rt').read().splitlines()
-    class_identifiers = ['distractor', 'target'] # in src_fn, 0 is the distractor; 1 is the tagetg
+    class_identifiers = ['nonanimal', 'animal'] # in src_fn, 0 is the distractor; 1 is the tagetg
     with open(dst_filename, 'wt') as fid:
         fid.write('img,cat\n')
         for line in data:
