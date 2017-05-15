@@ -67,25 +67,17 @@
       var responseKey = -1;
       var responseIndex = -1;
 
-      var keyboardListener = undefined;
+      var keyboardListener;
       var trial_was_timeout = false;
 
       var vid_element, vidsrc_element;
 
-      function cancelKeyboardListener()
-      {
-      	if (keyboardListener !== undefined)
-      	{
-      		jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-			keyboardListener = undefined;
-      	}
-      }
 
       // function to end trial when it is time
       var end_trial = function() {
 
         // kill keyboard listeners
-        cancelKeyboardListener();
+        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
 
         // kill any remaining setTimeout handlers
         for (var i = 0; i < setTimeoutHandlers.length; i++) {
@@ -225,7 +217,7 @@
       function skipTimeoutScreen()
       {
         // kill keyboard listeners
-        cancelKeyboardListener();
+        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
         next_trial();
       }
 

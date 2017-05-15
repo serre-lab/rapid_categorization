@@ -119,10 +119,10 @@ def find_MIRCS(
         generate_per_rev=True,
         generate_per_category=True,
         keep_categories=[
-            'border_collie',
-            'bald_eagle',
-            'school_bus',
-            'speedboat'
+            'great_white_shark',
+            'sorrel',
+            'speedboat',
+            'sportscar',
         ]
         ):
     df = pd.DataFrame(
@@ -169,7 +169,6 @@ def find_MIRCS(
                 'sub_MIRCs': im_means.iloc[group_sub_MIRCs].correctness
             }
             filtered_ims = [i for i in ims[0] if cat in i]
-            print deepcopy(keep_categories)
             images.update(
                 generate_MIRC_panels(
                     ims=filtered_ims,

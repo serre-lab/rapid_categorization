@@ -70,15 +70,17 @@ if __name__ == '__main__':
     #                     config.onset_times_ms, config.after_time_ms, stim_show_time_ms=100)
 
     input_image_paths = [
-        '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth_centered/',
-        '/media/data_cifs/clicktionary/causal_experiment/lrp_probabilistic_region_growth_centered/',
+        '/media/data_cifs/clicktionary/causal_experiment/bubbles_probabilistic_region_growth_centered'
+        # '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth_centered/',
+        # '/media/data_cifs/clicktionary/causal_experiment/lrp_probabilistic_region_growth_centered/',
         # '/media/data_cifs/clicktionary/causal_experiment/fixation_prediction_probabilistic_region_growth_centered/',
         ]
 
     output_paths = [
-        '/media/data_cifs/rapid_categorization/click_center_probfill_400stim_150res/',
-        '/media/data_cifs/rapid_categorization/lrp_center_probfill_400stim_150res/',
-        '/media/data_cifs/rapid_categorization/fixation_center_probfill_400stim_150res/',
+        '/media/data_cifs/rapid_categorization/bubbles_center_probfill_400stim_150res/'
+        # '/media/data_cifs/rapid_categorization/click_center_probfill_400stim_150res/',
+        # '/media/data_cifs/rapid_categorization/lrp_center_probfill_400stim_150res/',
+        # '/media/data_cifs/rapid_categorization/fixation_center_probfill_400stim_150res/',
         ]
 
     [generate_stimulus_videos(

@@ -69,19 +69,19 @@ class merger:
 if __name__ == '__main__':
     merge_dbs = merger()
     merge_dbs.combine_dbs(
-        dbs=[
-            'click_center_probfill_400stim_150res',
-            'click_center_probfill_400stim_150res_2',
-            'click_center_probfill_400stim_150res_3',
-            'click_center_probfill_400stim_150res_4',
-            'click_center_probfill_400stim_150res_5'
-            ],
-        output_name='click_center_probfill_400stim_150res_combined')
-
-
-
         # dbs=[
-        #     'lrp_center_probfill_400stim_150res',
-        #     'lrp_center_probfill_400stim_150res_2'
+        #     'click_center_probfill_400stim_150res',
+        #     'click_center_probfill_400stim_150res_2',
+        #     'click_center_probfill_400stim_150res_3',
+        #     'click_center_probfill_400stim_150res_4',
+        #     'click_center_probfill_400stim_150res_5'
         #     ],
-        # output_name='lrp_center_probfill_400stim_150res_combined')
+        # output_name='click_center_probfill_400stim_150res_combined')
+
+
+
+        dbs=[
+            'lrp_center_probfill_400stim_150res',
+            'lrp_center_probfill_400stim_150res_2',
+            ],
+        output_name='lrp_center_probfill_400stim_150res_combined')

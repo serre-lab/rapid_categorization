@@ -26,6 +26,7 @@ class Data:
         self.acc_by_im = {}
         self.acc_by_im_subjects = {}
         self.acc_by_im_and_max_answer_time = {} # Dict indexed by image filename; contains dictionaries indexed by max answer time
+        self.per_subject_rev_acc = {}        
         self.total_acc = []
         self.total_time = []
         self.min_rt_subj = {}
@@ -55,7 +56,7 @@ class Data:
         self.statuses = (3, 4, 5, 7)  # See https://github.com/NYUCCL/psiTurk/blob/master/psiturk/experiment.py
         self.full_accuracies = {}
         self.response_log = {}
-        self.force_remove_duplicate_workers = True
+        self.force_remove_duplicate_workers = False  # True
         self.worker_list = []
 
     def load(self, experiment_run, exclude_workerids=['']):
@@ -147,6 +148,7 @@ class Data:
     def load_subject(self, data):
         i_subj = self.n_subjects
         self.im_by_subj[i_subj] = {}
+        self.per_subject_rev_acc[str(i_subj)] = {}
         # Get experimental trials.
         alltrials = data['data']
         # Ignore training trials
@@ -223,6 +225,12 @@ class Data:
                         if max_answer_time not in self.acc_by_im_and_max_answer_time[img]:
                             self.acc_by_im_and_max_answer_time[img][max_answer_time] = []
                         self.acc_by_im_and_max_answer_time[img][max_answer_time].append(t['score'])
+                        # self.get_image_names(t['cat']) index is rev/imagename/category
+                        if str(self.get_image_names(t['cat'])[0]) in self.per_subject_rev_acc[str(i_subj)].keys():
+                            self.per_subject_rev_acc[str(i_subj)][self.get_image_names(t['cat'])[0]] += [t['score']]
+                        else:
+                            self.per_subject_rev_acc[str(i_subj)][self.get_image_names(t['cat'])[0]] = [t['score']]
+
                     count += 1
                 self.full_accuracies[i_subj] = (np.mean(
                     [r['score']
@@ -252,6 +260,7 @@ class Data:
         rev_scores = defaultdict(list)
         rev_subs = defaultdict(list)
         rev_ims = defaultdict(list)
+        rev_ims = defaultdict(list)
         for (im, scores), (im_check, subjects) in zip(
                 self.acc_by_im.iteritems(), self.acc_by_im_subjects.iteritems()):
             rev, base_im, base_im_name = self.get_image_names(im)
@@ -270,6 +279,16 @@ class Data:
             rev_scores[int(rev)] += scores
             rev_subs[int(rev)] += subjects
             rev_ims[int(rev)] += [im] * len(scores) # self.create_image_label(im, len(scores))
+
+        self.per_subject_rev_acc_mean = {}
+        for k, v in self.per_subject_rev_acc.iteritems():
+            # Per subject\
+            if subject_filter is not None:
+                if int(k) in subject_filter:
+                    self.per_subject_rev_acc_mean[k] = {}
+                    for j, w in v.iteritems():
+                        self.per_subject_rev_acc_mean[k][j] = np.mean(w)
+
         revs = sorted(rev_scores.keys())
         all_scores = [rev_scores[irev] for irev in revs]
         all_subjects = [rev_subs[irev] for irev in revs]
