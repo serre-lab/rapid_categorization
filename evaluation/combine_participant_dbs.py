@@ -83,5 +83,6 @@ if __name__ == '__main__':
         dbs=[
             'lrp_center_probfill_400stim_150res',
             'lrp_center_probfill_400stim_150res_2',
+            'lrp_center_probfill_400stim_150res_3'
             ],
         output_name='lrp_center_probfill_400stim_150res_combined')

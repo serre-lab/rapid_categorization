@@ -45,6 +45,10 @@ def base_settings(p):
     p['log_scale_revelations'] = False
     p['invert_revelations'] = True
     p['exclude_participants'] = []
+    p['identifiers']['pay_amt'] = '1.50'
+    p['identifiers']['exp_length'] = 15  # in minutes
+    p['identifiers']['exp_title'] = p['identifiers']['Class1']+' or '+p['identifiers']['Class2']+'?'
+
 
 def clicktionary(p):
     base_settings(p)

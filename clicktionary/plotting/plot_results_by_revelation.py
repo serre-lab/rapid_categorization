@@ -180,19 +180,13 @@ def do_plot(
         fit_line='linear',
         ci=66.6,
         plot_chance=0.5,
-        order=0,
+        order=3,
         x_jitter=0,
         plot_type='reg',
         n_boot=500,
         new_max=np.logspace(0, 2.2, num=12)[-1],
         ax=None):
 
-    df = pd.DataFrame(
-        data[:, :2],
-        columns=['Revelation', 'correctness'])  # , 'subject', 'images'])
-    # df = df.set_index('Revelation')['correctness']
-    # sns.tsplot(data=df)
-    # Interpret fit from fit_line
     plot_params = {
         'label': label,
         'x_jitter': x_jitter,
@@ -202,11 +196,26 @@ def do_plot(
         'color': clr,
         'truncate': True,
         }
+
+    if data.shape[1] > 2:
+        df = pd.DataFrame(
+            data[:, :3],
+            columns=['Revelation', 'correctness', 'subject'])  # , 'images'])
+        plot_params['units'] = 'subject'
+    else:
+        df = pd.DataFrame(
+            data[:, :2],
+            columns=['Revelation', 'correctness'])  # , 'images'])
+    # df = df.set_index('Revelation')['correctness']
+    # sns.tsplot(data=df)
+    # Interpret fit from fit_line
     if 'linear' in fit_line:
         plot_params['logistic'] = True
         plot_params['fit_reg'] = True
     elif 'logistic' in fit_line:
         plot_params['logx'] = True
+    elif 'high_order' in fit_line:
+        plot_params['order'] = order
     elif 'lowess' in fit_line:
         plot_params['lowess'] = True
         plot_params['fit_reg'] = True
@@ -517,9 +526,9 @@ def plot_results_by_revelation(
         for idx, (si, color, la, fl) in enumerate(zip(
                 cnn_index, colors, cnn_labels, cnn_fit_line)):
             data_cnn = get_cnn_results_by_revelation(
-                si, filter_class_file=filter_class_file)
+                si, filter_class_file=filter_class_file, off=float(idx)/2)
             if p['log_scale_revelations']:
-                data_cnn = apply_log_scale(data_human, data_cnn, off=float(idx/2))
+                data_cnn = apply_log_scale(data_human, data_cnn, off=float(idx*2))
             cnn_dfs[cnn_index[0]] = data_cnn
             cnn_means, ax = do_plot(
                 data_cnn,
@@ -548,11 +557,11 @@ def plot_results_by_revelation(
             ax=ax)
 
     if human_stats.keys() and cnn_means is not None:
-        # p_values = {k: measure_p_value(v, cnn_means) for k, v in human_stats.iteritems()}
-        print 'Disabled human/cnn stats until we get synthetic subjects'
+        p_values = {k: measure_p_value_human_v_cnn(
+            v, cnn_means) for k, v in human_stats.iteritems()}
+        # print 'Disabled human/cnn stats until we get synthetic subjects'
         # print p_values
         # Count per bin # of people that exceed machines.
-
 
     plt.legend(loc='upper left')
     plt.savefig(
@@ -563,13 +572,12 @@ def plot_results_by_revelation(
             config.plot_path, 'perf_by_revelation_%s.pdf' % experiment_run))
     print 'Saved to: %s' % os.path.join(
         config.plot_path, 'perf_by_revelation_and_mat_%s.png' % experiment_run)
-    return human_dfs, cnn_dfs, human_ims, p_values
+    return human_dfs, cnn_dfs, human_ims, None
 
 
 def measure_p_value_human_v_cnn(human, cnn):
     human_keys = {}
     cnn_keys = sorted([float(x) for x in cnn.keys()])
-    cnn_map = {}
     for idx, k in enumerate(
         sorted(
             [int(x) for x in human[human.keys()[0]].keys()])):
@@ -662,7 +670,7 @@ def plot_results_by_revelation_and_max_answer_time(
 
 if __name__ == '__main__':
     repeat_workers = ['A15FXHC1CVNW31']  # Remove a specific dude
-    data_filter = 'response'  # 'response'  # 'full_median' 'response' 'zero'
+    data_filter = 'none'  # 'response'  # 'response'  # 'full_median' 'response' 'zero'
     image_dir = '/media/data_cifs/clicktionary/causal_experiment/clicktionary_probabilistic_region_growth_centered'
     output_dir = '/home/drew/Desktop/clicktionary_MIRCs'
     mirc_plot_key = 'click_center_probfill_400stim_150res_combined'
@@ -709,27 +717,76 @@ if __name__ == '__main__':
     # if show_figs: plt.show()
 
     # Figure: Clicktionary vs. LRP
+    # plot_results_by_revelation(
+    #     experiment_run=[
+    #         'click_center_probfill_400stim_150res_combined',
+    #         'lrp_center_probfill_400stim_150res_combined'
+    #         ],
+    #     exclude_workerids=repeat_workers,
+    #     human_fit_line=['logistic', 'logistic'],  # ['linear','logistic'],
+    #     cnn_fit_line=['linear', 'linear'],  # ['linear','logistic'],
+    #     cnn_index=[120, 130],  # [120, 130, 140],
+    #     human_labels=[
+    #         'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
+    #         'Human performance: LRP centered probabilistic; 400ms stim, 150ms response.',
+    #         ],
+    #     cnn_labels=[
+    #         'VGG16 performance: Clicktionary centered probabilistic.',
+    #         'VGG16 performance: LRP centered probabilistic.',
+    #         ],
+    #     human_ci=exp_ci,
+    #     cnn_ci=cnn_ci,
+    #     data_filter=data_filter)
+    # if show_figs: plt.show()
+
+    # plot_results_by_revelation(
+    #     experiment_run=[
+    #         'click_center_probfill_400stim_150res_combined',
+    #         'lrp_center_probfill_400stim_150res_combined'
+    #         ],
+    #     exclude_workerids=repeat_workers,
+    #     human_fit_line=['logistic', 'logistic'],  # ['linear','logistic'],
+    #     cnn_fit_line=['linear', 'linear'],  # ['linear','logistic'],
+    #     cnn_index=[120,  130],  # [120, 130, 140],
+    #     human_labels=[
+    #         'Human performance: Animal vehicle centered probabilistic; 400ms stim, 150ms response.',
+    #         'Human performance: LRP centered probabilistic; 400ms stim, 150ms response.',
+    #         ],
+    #     cnn_labels=[
+    #         'VGG16 performance: Clicktionary centered probabilistic.',
+    #         'VGG16 performance: LRP centered probabilistic.',
+    #         ],
+    #     human_ci=exp_ci,
+    #     cnn_ci=cnn_ci,
+    #     data_filter=data_filter)
+    # if show_figs: plt.show()
+
+
     plot_results_by_revelation(
         experiment_run=[
-            'click_center_probfill_400stim_150res_combined',
-            'lrp_center_probfill_400stim_150res_combined'
+            'click_center_probfill_400stim_150res_combined'
             ],
         exclude_workerids=repeat_workers,
-        human_fit_line=['logistic', 'logistic'],  # ['linear','logistic'],
-        cnn_fit_line=['linear', 'linear'],  # ['linear','logistic'],
-        cnn_index=[120, 130],  # [120, 130, 140],
+        human_fit_line=['logistic'],  # ['linear','logistic'],
+        cnn_fit_line=['linear', 'lowess', 'lowess', 'lowess'],  # ['linear','logistic'],
+        cnn_index=[120, 121, 122, 123],  # [120, 130, 140],
         human_labels=[
             'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
-            'Human performance: LRP centered probabilistic; 400ms stim, 150ms response.',
             ],
         cnn_labels=[
             'VGG16 performance: Clicktionary centered probabilistic.',
-            'VGG16 performance: LRP centered probabilistic.',
+            'Clickme performance: Clicktionary centered probabilistic.',
+            'Clickme performance: Clicktionary centered probabilistic. 100k',
+            'Baseline performance: Clicktionary centered probabilistic. 100k',
             ],
         human_ci=exp_ci,
         cnn_ci=cnn_ci,
         data_filter=data_filter)
     if show_figs: plt.show()
+
+
+
+
 
     # Figure: Clicktionary animal/non-animal
     plot_results_by_revaluation_by_class(
