@@ -12,7 +12,7 @@ import pickle
 from scipy import stats
 from rapid_categorization.model import util
 # import rapid_categorization.model.Analysis.data_loader # removed by Michele may 16 2017
-import rapid_categorization.evaluation.data_loader
+import rapid_categorization.evaluation.data_loader_nsf
 import rapid_categorization.model.Analysis.plot_correlation_overview
 import rapid_categorization.model.Analysis.plot_correlations
 import matplotlib.pyplot as plt
@@ -83,7 +83,7 @@ def eval_correlation_experiment(num_sets): # removed set_name as input
     # Data evaluation
     if do_eval:
         # data = rapid_categorization.model.Analysis.data_loader.Data()
-        data = rapid_categorization.evaluation.data_loader.Data()
+        data = rapid_categorization.evaluation.data_loader_nsf.Data()
         data.load_multi(train_batches, experiment_ids) # train_batches is set_indexes
         data.eval_participants()
         if do_model_eval:
@@ -132,7 +132,7 @@ def eval_extreme_experiment():
     # Data evaluation
     if do_eval:
         # data = rapid_categorization.model.Analysis.data_loader.Data()
-        data = rapid_categorization.evaluation.data_loader.Data()
+        data = rapid_categorization.evaluation.data_loader_nsf.Data()
         data.load_multi(experiment_ids)
         data.eval_participants()
         data.eval_by_classes(class_idcs=class_ids, class_names=class_names)
