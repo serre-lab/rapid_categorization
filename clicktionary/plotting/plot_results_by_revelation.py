@@ -23,14 +23,20 @@ matplotlib.rc('text', usetex='false')
 matplotlib.rcParams.update({'font.size': 12})
 
 
-def apply_log_scale(data_human, data_cnn, off=0):
+def apply_log_scale(data_human, data_cnn, off=0, off_full=True):
     # Check if CNN and human are in the same scale. If not, recode the CNN.
     uni_human_rev = np.unique(data_human[:, 0])
     uni_cnn_rev = np.unique(data_cnn[:, 0])
+    full_size = uni_human_rev.max()
     if not all(uni_human_rev == uni_cnn_rev):
         for hr, cr in zip(uni_human_rev, uni_cnn_rev):
             it_idx = data_cnn[:, 0] == cr
-            data_cnn[it_idx, 0] = hr + off
+            if off_full and hr == full_size:
+                data_cnn[it_idx, 0] = hr + off
+            elif not off_full:
+                data_cnn[it_idx, 0] = hr + off
+            else:
+                data_cnn[it_idx, 0] = hr
     return data_cnn
 
 
@@ -180,8 +186,8 @@ def do_plot(
         fit_line='linear',
         ci=66.6,
         plot_chance=0.5,
-        order=3,
-        x_jitter=0,
+        order=2,
+        x_jitter=3,
         plot_type='reg',
         n_boot=500,
         new_max=np.logspace(0, 2.2, num=12)[-1],
@@ -216,6 +222,7 @@ def do_plot(
         plot_params['logx'] = True
     elif 'high_order' in fit_line:
         plot_params['order'] = order
+        plot_params['logx'] = True
     elif 'lowess' in fit_line:
         plot_params['lowess'] = True
         plot_params['fit_reg'] = True
@@ -768,22 +775,54 @@ if __name__ == '__main__':
             ],
         exclude_workerids=repeat_workers,
         human_fit_line=['logistic'],  # ['linear','logistic'],
-        cnn_fit_line=['linear', 'lowess', 'lowess', 'lowess'],  # ['linear','logistic'],
-        cnn_index=[120, 121, 122, 123],  # [120, 130, 140],
+        cnn_fit_line=['linear', 'lowess'],  # , 'lowess'], #  'lowess'],  # , 'lowess', 'lowess'],  # ['linear','logistic'],
+		cnn_index=[120, 129],  # , 122, 123],  # [120, 130, 140],
         human_labels=[
             'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
             ],
         cnn_labels=[
             'VGG16 performance: Clicktionary centered probabilistic.',
             'Clickme performance: Clicktionary centered probabilistic.',
-            'Clickme performance: Clicktionary centered probabilistic. 100k',
-            'Baseline performance: Clicktionary centered probabilistic. 100k',
+            # 'Crop instead of scale --Clickme performance: Clicktionary centered probabilistic. 100k',
+            # 'Baseline performance: Clicktionary centered probabilistic. 100k',
             ],
         human_ci=exp_ci,
         cnn_ci=cnn_ci,
         data_filter=data_filter)
     if show_figs: plt.show()
 
+    plot_results_by_revelation(
+        experiment_run=[
+            'click_center_probfill_400stim_150res_combined',
+            'lrp_center_probfill_400stim_150res_combined'
+            ],
+        exclude_workerids=repeat_workers,
+        human_fit_line=['logistic', 'logistic'],  # ['linear','logistic'],
+        cnn_fit_line=['linear', 'lowess'],  # , 'lowess'], #  'lowess'],  # , 'lowess', 'lowess'],  # ['linear','logistic'],
+                cnn_index=[120, 130],  # , 122, 123],  # [120, 130, 140],
+        human_labels=[
+            'Human performance: Clicktionary centered probabilistic; 400ms stim, 150ms response.',
+            'Human performance: LRP centered probabilistic; 400ms stim, 150ms response.',
+            ],
+        cnn_labels=[
+            'VGG16 performance: Clicktionary centered probabilistic.',
+            'VGG16 performance: LRP centered probabilistic.',
+            # 'Crop instead of scale --Clickme performance: Clicktionary centered probabilistic. 100k',
+            # 'Baseline performance: Clicktionary centered probabilistic. 100k',
+            ],
+        human_ci=exp_ci,
+        cnn_ci=cnn_ci,
+        data_filter=data_filter)
+    if show_figs: plt.show()
+
+
+
+
+
+
+
+
+###
 
 
 
