@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Load experimental and model data
 
 import re
@@ -9,7 +8,7 @@ from rapid_categorization.model import util
 from results_key import label_results
 from scipy import stats
 from collections import defaultdict
-from rapid_categorization.clicktionary.config import experiment_descs
+# from rapid_categorization.clicktionary.config import experiment_descs # removed by MW
 from rapid_categorization.run_settings.settings import get_settings
 
 class Data:
@@ -30,8 +29,8 @@ class Data:
         self.total_acc = []
         self.total_time = []
         self.min_rt_subj = {}
-        self.min_rt_subj['animal'] = {}
-        self.min_rt_subj['nonanimal'] = {}
+        self.min_rt_subj['animal'] = {} # target
+        self.min_rt_subj['nonanimal'] = {} # distractor
         self.min_rt_subj['animal_wrong'] = {}
         self.min_rt_subj['nonanimal_wrong'] = {}
         self.im_by_subj = {}
@@ -60,7 +59,7 @@ class Data:
         self.worker_list = []
 
     def load(self, experiment_run, exclude_workerids=['']):
-        p = get_settings(experiment_run)
+        self.p = get_settings(experiment_run)
         set_index, set_name = p['set_index'], p['set_name']
         self.load_ground_truth(set_index, set_name)
         self.load_participants(experiment_run, exclude_workerids)
@@ -73,8 +72,7 @@ class Data:
 
     def load_participant_json(self, experiment_run, verbose=True):
         exp_filename = util.get_experiment_db_filename_by_run(experiment_run)
-        r = sqlite3.connect(exp_filename).cursor().execute(
-            "SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in %s AND NOT datastring==''" % (self.statuses,)).fetchall()
+        r = sqlite3.connect(exp_filename).cursor().execute("SELECT workerid,beginhit,status,datastring FROM placecat WHERE status in %s AND NOT datastring==''" % (self.statuses,)).fetchall()
         if verbose: print "%d participants found in file %s." % (len(r), exp_filename)
         return r
 
@@ -105,10 +103,11 @@ class Data:
                 self.im2path[k] = im_root
 
     def load_multi(self, set_indexes, set_name, bootstrap_size=None):
+        self.p = get_settings(set_name)
         r = []
         for set_index in set_indexes:
             self.load_ground_truth(set_index, set_name)
-            r += self.load_participant_json(set_index, set_name, verbose=(bootstrap_size is None))
+            r += self.load_participant_json(set_name, verbose=(bootstrap_size is None))
         if bootstrap_size is not None:
             idcs = np.random.choice(range(len(r)), size=bootstrap_size, replace=True)
             r = [r[i] for i in idcs]
@@ -324,7 +323,6 @@ class Data:
         self.model_comp['animal']['human_acc'] = np.empty([1,self.animal_ind]) #arrays to hold human accuracy data for model comparison
         self.model_comp['nonanimal']['human_acc'] = np.empty([1,self.nonanimal_ind])
         # caluclate mean RT and performance per image
-        import ipdb;ipdb.set_trace()
         for img,trials in self.trials_by_img.iteritems():
             n = len(trials)
             score = float(sum([t['score'] for t in trials])) / n
@@ -354,14 +352,15 @@ class Data:
         self.score_data = [self.data_by_img[img]['score']*100 for img in self.data_by_img]
         self.rt_data = [self.data_by_img[img]['rt'] for img in self.data_by_img]
 
-        #Analyze results
+        #Analyze results ##### This could be where error is
         # find human accuracy
         self.hum_im_acc = []
         for im in sorted(self.acc_by_im.keys()):
             res = []
-            for mrt in self.acc_by_im[im].keys():
-                res = np.concatenate((res, self.acc_by_im[im][mrt]))
-            self.hum_im_acc.append(np.mean(res))
+            # for mrt in self.acc_by_im[im].keys(): # self.acc_by_im[im] is a list, so MW rewrote code below
+                # res = np.concatenate((res, self.acc_by_im[im][mrt]))
+            self.hum_im_acc.append(np.mean(self.acc_by_im[im])) # most recent working line
+            # self.hum_im_acc.append(np.mean(res))
 
     def load_model_data(self, model, classifier_type, train_batches):
         layer_names = util.get_model_layers(model)

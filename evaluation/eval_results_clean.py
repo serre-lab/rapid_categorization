@@ -5,7 +5,7 @@ Created on Sun May  8 19:14:15 2016
 @author: jcader
 """
 # TODO: Michele work with this --> overall eval script
-# TODO: experiment IDs are experiment name set for TURK experiments
+# experiment IDs are experiment name set for TURK experiments
 
 import numpy as np
 import pickle
@@ -51,7 +51,7 @@ def eval_human_behaviour(data):
         print corrs
 
 
-def eval_correlation_experiment(num_sets): # removed set_name as input
+def eval_correlation_experiment():
     #input lists
     do_eval = True
     save_eval = True
@@ -75,7 +75,7 @@ def eval_correlation_experiment(num_sets): # removed set_name as input
     # experiment_ids = [30, 31, 32, 33, 34]
     experiment_ids = 'artifact_vehicles_turk' # current Amazon TURK experiment
     classifier_type = 'svm'
-    train_batches = range(num_sets)
+    train_batches = range(16)
     axis_types = ['rf']#['rf', 'idx']
     bootstrap_count = 300
     bootstrap_size = 180
@@ -137,13 +137,12 @@ def eval_extreme_experiment():
         data.eval_participants()
         data.eval_by_classes(class_idcs=class_ids, class_names=class_names)
         if save_eval: pickle.dump(data, open('extreme_data.p', 'wb'))
-    else:
-        data = pickle.load(open('extreme_data.p', 'rb'))
+        else: data = pickle.load(open('extreme_data.p', 'rb'))
 
 
 
 if __name__ == '__main__':
-    eval_correlation_experiment(16)
+    eval_correlation_experiment()
     #eval_extreme_experiment()
 
 # Show and wait for closing

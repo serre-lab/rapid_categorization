@@ -35,8 +35,8 @@ elif hostname == 'g17':
     # # while /media/storage does not work *****
     # base_path = '/media/data_cifs/nsf_levels/michele/nsf_rapid_categorization/'
     # log_path = '/media/data_cifs/nsf_levels/michele/nsf_rapid_categorization/log'
-    experiment_path = '/media/data_cifs/nsf_levels/michele/Results'
-    plot_path = '/media/data_cifs/nsf_levels/michele/plots'
+    experiment_path = '/media/data_cifs/nsf_levels/Results'
+    plot_path = '/media/data_cifs/nsf_levels/plots'
 elif hostname.beginswith('gpu'):
     # CCV
     imageset_base_path = '/users/seberhar/data/data/AnNonAnNIPS'
