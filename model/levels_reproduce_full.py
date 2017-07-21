@@ -5,6 +5,7 @@ import operator as op
 import predict
 import util
 from ext_caffe_direct import ext_caffe_direct
+from ext_tf import ext_tf
 
 def opt_C(cvals, model_name, feature_name, classifier_type, set_name, train_batch_num, do_norm):
     import train_classifier
@@ -40,7 +41,7 @@ def build_classifiers(opt_params, batch_size, imset, extract_trainset, best_C, r
     # Extract layer
     rand_samp = None
     if extract_trainset == True:
-        test_batches = range(0,20)+imset
+        test_batches = range(0,16)+imset
     else:
         test_batches = imset
     extract_layers(model_name=model_name, feature_name=feature_name, random_sample_ident=random_sample_ident, set_name=set_name, batches=test_batches, batch_size=batch_size, gpu_idx=gpu_idx, force_overwrite=force_overwrite)
@@ -69,6 +70,7 @@ def build_classifiers(opt_params, batch_size, imset, extract_trainset, best_C, r
 
 
 def extract_layers(model_name, feature_name, random_sample_ident, set_name, batches, batch_size, gpu_idx, force_overwrite=False):
+    tf_model_names = { 'clickme_gradient_VGG16', 'tf_VGG16' }
     # Extract layer
     rand_samp = None
     for i in batches:
@@ -79,7 +81,10 @@ def extract_layers(model_name, feature_name, random_sample_ident, set_name, batc
             print 'Extraction: Skipping set %d at %s' % (i, output_file)
             continue
         print 'Extracting from set %d to %s...' % (i, output_file)
-        ext_samp = ext_caffe_direct(input_root, input_file, output_file, model_name, feature_name, random_sample_ident, rand_samp, batch_size, gpu_idx=gpu_idx, set_name=set_name)
+        if model_name in tf_model_names:
+            ext_samp = ext_tf(input_root, input_file, output_file, model_name, feature_name, random_sample_ident, rand_samp, batch_size, flatten_features=True, gpu_idx=gpu_idx, set_name=set_name)
+        else:
+            ext_samp = ext_caffe_direct(input_root, input_file, output_file, model_name, feature_name, random_sample_ident, rand_samp, batch_size, gpu_idx=gpu_idx, set_name=set_name)
         if rand_samp is None: rand_samp = ext_samp
 
 
@@ -118,19 +123,19 @@ if __name__ == '__main__':
     # opt_params['set_name'] = 'dist_vehicles_25'
     # opt_params['set_name'] = 'struct_vehicles_25'
     # opt_params['set_name'] = 'artifact_vehicles'
-    opt_params['set_name'] = 'artifact_dist_vehicle_target' #<<<<---
+    opt_params['set_name'] = 'set' #<<<<---
     # opt_params['set_name'] = 'artifact_sport_vehicles'
     # opt_params['set_name'] = 'artifact_vehicles_human_test' # <<<<---
     opt_params['cvals'] = range(-5,-2)
-    opt_params['model_name'] = 'VGG16'
-    opt_params['feature_name'] = 'fc7ex'
+    opt_params['model_name'] = 'tf_VGG16' if len(sys.argv)==1 else sys.argv[1]
+    opt_params['feature_name'] = 'relu7' if len(sys.argv)==1 else sys.argv[2]
     opt_params['classifier_type'] = 'svm'
     opt_params['train_batch_num'] = 16
     default_C = -4
     opt_params['subset'] = ''#'_pca1'
 
-    #build_classifiers(opt_params, batch_size, [], extract_trainset, best_C=None, random_sample_ident=random_sample_ident, force_overwrite=False)
-    imset = [120, 130, 140]#1603241729
+    build_classifiers(opt_params, batch_size, [], extract_trainset, best_C=-5, random_sample_ident=random_sample_ident, force_overwrite=False)
+    imset = [120]#1603241729
     extract_layers(
         opt_params['model_name'],
         opt_params['feature_name'],

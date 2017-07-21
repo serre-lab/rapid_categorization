@@ -7,6 +7,7 @@ import os
 os.environ['GLOG_minloglevel'] = '2'
 import caffe
 from scipy import misc
+from prep_img import prep_img
 
 # Run image list through caffe model and extract features
 def ext_caffe_direct(
@@ -27,6 +28,7 @@ def ext_caffe_direct(
         caffe.set_mode_gpu()
         caffe.set_device(gpu_idx)
     rand_subset = rand_samp
+    model_name = model_name.replace('_control', '')
     model_file = util.get_model_filename(model_name, feature_name)
     print model_file
     mean_file = util.get_mean_filename(model_name)
@@ -59,7 +61,7 @@ def ext_caffe_direct(
             if mean.shape[2] > crop_size[1]:
                 x0 = int((mean.shape[2] - crop_size[1])/2)
                 mean = mean[:,:,x0:x0+crop_size[1]]
-        if set_name != 'clicktionary':
+        if set_name != 'clicktionaryB':
             transformer.set_crop('data', [crop_size[0], crop_size[1]])
     if mean is not None: transformer.set_mean('data', mean)
     transformer.set_raw_scale('data', 255)  # the reference model operates on images in [0,255] range instead of [0,1]
@@ -71,11 +73,14 @@ def ext_caffe_direct(
         # Load images
         for j in xrange(nb):
             fn = inputs[ii+j]
-            if not fn.endswith('.png'):
+            if not fn.endswith('.png') and set_name != 'set':
                 fn = os.path.join(input_root, fn + '.jpg')
             img = caffe.io.load_image(fn)
-            if set_name == 'clicktionary':
+            img = prep_img(img)
+            if set_name == 'clicktionaryB':
+                print 'RESIZE FROM ', img.shape
                 img = misc.imresize(img, crop_size)
+                print 'TO ', img.shape
             net.blobs['data'].data[j,...] = transformer.preprocess('data', img)
         net.forward()
         output = net.blobs[feature_name].data

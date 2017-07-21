@@ -18,7 +18,7 @@ if hostname == 'x8':
     base_path = '/media/data/nsf_levels/'
     log_path = '/media/data/nsf_levels/log'
     experiment_path = '/media/data_cifs/nsf_levels/Results'
-    plot_path = '/media/data_cifs/nsf_levels/plots'
+    plot_path = '/media/data_cifs/nsf_levels/plots_control'
 elif hostname == 'x9':
     # Drew's machine
     imageset_base_path = '/media/data_cifs/nsf_levels/'

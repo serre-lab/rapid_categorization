@@ -349,6 +349,7 @@ class Data:
         accs = []
         self.model_comp['animal'][model + '_' + layer] = np.ones([1, self.animal_ind])
         self.model_comp['nonanimal'][model + '_' + layer] = np.ones([1, self.nonanimal_ind])
+        n_images_for_acc = 0
         for set_index, set_name in self.loaded_sets:
             inputfn = util.get_predictions_filename(model, layer, classifier_type, train_batches, set_index, set_name)
             modeldata = np.load(inputfn)
@@ -359,8 +360,11 @@ class Data:
                 if imname in self.im2key.keys():
                     self.model_comp[self.im2lab[imname]][model + '_' + layer][0][self.im2key[imname]] = modeldata['hyper_dist'][index]
             acc = float(sum(modeldata['pred_labels'] == modeldata['true_labels'])) / float(len(modeldata['pred_labels']))
+            n_images_for_acc += len(modeldata['pred_labels'])
             accs += [acc]
-        self.model_accs[model + '_' + layer] = np.mean(acc)
+        mean_acc = np.mean(acc)
+        self.model_accs[model + '_' + layer] = mean_acc
+        print '%.1f accuracy for %s_%s derived from %d images (%d sets: %s)' % (mean_acc*100, model, layer, n_images_for_acc, len(accs), str(self.loaded_sets))
 
     def calc_model_correlation(self, model, corr, adjust_for_true_label=True, verbose=True):
         layer_names = util.get_model_layers(model)

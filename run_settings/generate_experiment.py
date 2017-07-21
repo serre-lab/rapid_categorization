@@ -63,7 +63,7 @@ def apply_dict_to_tree(root_path, extensions, settings):
                 fn_full = os.path.join(subdir, file)
                 apply_dict_to_template(fn_full, fn_full, settings)
 
-def generate_experiment(name, force_overwrite=False, deploy=False):
+def generate_experiment(name, force_overwrite=False, deploy=False, force_video_creation=False):
     # Get settings
     p = {}
     getattr(settings, name)(p)
@@ -78,7 +78,7 @@ def generate_experiment(name, force_overwrite=False, deploy=False):
         shutil.rmtree(run_path)
     # Generate image sets
     video_base_path = p['video_base_path']
-    if not os.path.isdir(video_base_path):
+    if not os.path.isdir(video_base_path) or force_video_creation:
         print 'Did not found videos at %s' % video_base_path
         print 'Generating...'
         onset_times_ms = p['exp']['trial_pretimes']
@@ -116,5 +116,6 @@ def sync_stimuli():
     subprocess.call(['rsync', '-aLvz', '--', '/media/data_clicktionary/rapid_categorization', 'turk:/media/data_clicktionary/'])
 
 if __name__ == '__main__':
-    generate_experiment('click_center_probfill_400stim_150_animal_nonanimal', force_overwrite=True, deploy=True)
+    # generate_experiment('click_center_probfill_400stim_150res_5', force_overwrite=True, deploy=True)
+    generate_experiment('artifact_vehicles_turk', force_overwrite=True, deploy=True, force_video_creation=True)
     # sync_stimuli()

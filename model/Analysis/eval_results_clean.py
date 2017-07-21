@@ -1,9 +1,14 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sun May  8 19:14:15 2016
 
 @author: jcader
 """
+
+# For remote plotting without display
+import matplotlib as mpl
+mpl.use('Agg')
 
 import numpy as np
 import pickle
@@ -50,12 +55,12 @@ def eval_human_behaviour(data):
 
 def eval_correlation_experiment():
     #input lists
-    do_eval = False
-    save_eval = True
+    do_eval = True
+    save_eval = False
     do_overview = True
     do_easy_hard_plot = False
     do_correlations = False
-    do_bootstrap = True
+    do_bootstrap = False
     do_model_eval = True
     model_names_compare = ['VGG16_ft70000', 'VGG16', 'VGG19', 'AlexNet']
     model_names_specific = ['VGG16_ft70000']
